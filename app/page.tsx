@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from 'react';
-import { PlayCircle, Crown, Trophy, Calendar, Info, UserCircle, Menu, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import ReactPlayer from 'react-player';
+import { PlayCircle, Crown, Trophy, Calendar, Info, UserCircle, Menu, X, Gamepad2, Swords, Newspaper } from 'lucide-react';
 
 // --- TYPE DEFINITIONS ---
 interface Player {
@@ -40,10 +41,11 @@ const Header = () => {
     return (
         <header className="py-4 px-4 sm:px-8 lg:px-16 absolute top-0 left-0 right-0 z-50 bg-transparent">
             <div className="container mx-auto flex justify-between items-center">
-                <h1 className="text-2xl font-bold tracking-wider">AIRENA</h1>
+                <h1 className="text-2xl font-bold tracking-wider flex items-center gap-2"><Gamepad2 /> AIRENA</h1>
                 <nav className="hidden md:flex items-center space-x-8">
                     <a href="#" className="text-gray-300 hover:text-white transition-colors">Browser</a>
                     <a href="#" className="text-gray-300 hover:text-white transition-colors">Categories</a>
+                    <a href="#" className="text-gray-300 hover:text-white transition-colors">Blogs</a>
                 </nav>
                 <div className="hidden md:block">
                     <a href="#" className="bg-white/10 border border-white/20 backdrop-blur-sm text-white px-6 py-2 rounded-lg font-semibold hover:bg-white/20 transition-colors">Sign In</a>
@@ -59,6 +61,7 @@ const Header = () => {
                     <nav className="flex flex-col items-center space-y-4">
                         <a href="#" className="text-gray-300 hover:text-white transition-colors py-2">Browser</a>
                         <a href="#" className="text-gray-300 hover:text-white transition-colors py-2">Categories</a>
+                        <a href="#" className="text-gray-300 hover:text-white transition-colors py-2">Blogs</a>
                         <a href="#" className="bg-white text-black w-full text-center px-6 py-2 rounded-lg font-semibold hover:bg-gray-200 transition-colors mt-2">Sign In</a>
                     </nav>
                 </div>
@@ -70,12 +73,12 @@ const Header = () => {
 const HeroSection = () => {
     const slides: Slide[] = [
         {
-            image: 'https://storage.googleapis.com/gemini-prod-us-west1-409903542225/images/158a229a-2a69-424a-931b-757a3c754407.jpg',
+            image: '/airenaslide1.jpg',
             title: 'The Ultimate Gaming & Sports Streaming Platform',
             subtitle: 'Join the next generation of competitive gaming and sports streaming'
         },
         {
-            image: 'https://images.unsplash.com/photo-1542751371-659545093593?q=80&w=2070&auto=format&fit=crop',
+            image: '/airenaslide2.jpg',
             title: 'Live Events, Every Day',
             subtitle: 'Experience the thrill of live competition from around the globe'
         },
@@ -113,13 +116,13 @@ const HeroSection = () => {
                         <h2 className="text-4xl md:text-6xl font-bold leading-tight">{slides[currentSlide].title}</h2>
                         <p className="text-gray-300 text-lg">{slides[currentSlide].subtitle}</p>
                         <div className="flex items-center gap-4 pt-4">
-                            <button className="bg-emerald-500 text-white px-8 py-3 rounded-lg font-semibold hover:bg-emerald-600 transition-colors">Start Watching</button>
+                            <button className="bg-emerald-500 text-white px-8 py-3 rounded-lg font-semibold hover:bg-emerald-600 transition-all transform hover:scale-105">Start Watching</button>
                             <button className="flex items-center gap-2 text-gray-300 hover:text-white transition-colors"><Info size={20} /> What is Airena?</button>
                         </div>
                     </div>
                     <div className="flex justify-center space-x-2 mt-8">
                         {slides.map((_, index) => (
-                            <button key={index} onClick={() => setCurrentSlide(index)} className={`h-2 rounded-full transition-all duration-300 ${index === currentSlide ? 'w-8 bg-emerald-500' : 'w-4 bg-gray-500'}`}></button>
+                            <button key={index} onClick={() => setCurrentSlide(index)} className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${index === currentSlide ? 'w-8 bg-emerald-500' : 'w-4 bg-gray-500'}`}></button>
                         ))}
                     </div>
                 </div>
@@ -159,42 +162,55 @@ const CategoriesSection = () => {
     );
 };
 
-const FeaturedVideoSection = () => (
-    <section className="py-16 sm:py-24 px-4 sm:px-8">
-        <div className="container mx-auto">
-            <div className="relative aspect-video bg-black rounded-2xl overflow-hidden group shadow-2xl shadow-emerald-500/10">
-                <AppImage src="https://i.pinimg.com/originals/e3/c5/d0/e3c5d06b3a0975313ea8230678c14828.jpg" alt="Cyberpunk gaming environment" className="w-full h-full object-cover opacity-60 group-hover:opacity-50 group-hover:scale-105 transition-all duration-500" fallbackText="Live Event" />
-                <div className="absolute inset-0 flex items-center justify-center bg-black/20"><PlayCircle size={100} className="text-white/70 group-hover:text-white group-hover:scale-110 transition-all cursor-pointer drop-shadow-lg" /></div>
+const FeaturedVideoSection = () => {
+    const [isClient, setIsClient] = useState(false);
+
+    useEffect(() => {
+        setIsClient(true);
+    }, []);
+
+    return (
+        <section className="py-16 sm:py-24 px-4 sm:px-8">
+            <div className="container mx-auto max-w-6xl">
+                <div className="relative aspect-video rounded-2xl overflow-hidden group shadow-2xl shadow-emerald-500/10">
+                   {isClient && (
+                        <ReactPlayer
+                            src="https://www.youtube.com/watch?v=e_E9W2vsRbQ"
+                            className="react-player"
+                            playing
+                            loop
+                            muted
+                            controls={true}
+                            width="100%"
+                            height="100%"
+                        />
+                   )}
+                </div>
             </div>
-             <div className="flex justify-center space-x-2 mt-8">
-                {[...Array(5)].map((_, index) => (
-                    <button key={index} className={`h-2 rounded-full transition-all duration-300 ${index === 0 ? 'w-8 bg-emerald-500' : 'w-4 bg-gray-500'}`}></button>
-                ))}
-            </div>
-        </div>
-    </section>
-);
+        </section>
+    );
+};
 
 
 const BigTournamentSection = () => (
     <section className="py-16 sm:py-24 px-4 sm:px-8">
         <div className="container mx-auto relative bg-gradient-to-r from-green-500/20 via-emerald-500/20 to-teal-500/20 rounded-2xl p-8 overflow-hidden">
-            <div className="flex flex-col md:flex-row items-center justify-between gap-8">
+            <div className="flex flex-col md:flex-row items-center justify-around gap-8">
                 {/* Player 1 */}
-                <div className="w-full md:w-1/4 flex justify-center">
-                    <AppImage src="https://i.imgur.com/u1mGZ5T.png" alt="Player Phoenix" className="w-48 md:w-64" fallbackText="Player 1" />
+                <div className="w-full md:w-auto flex justify-center">
+                    <AppImage src="/player1.jpg" alt="Player Phoenix" className="w-40 md:w-48" fallbackText="Player 1" />
                 </div>
                 
                 {/* Center Content */}
-                <div className="text-center md:w-1/2 space-y-4">
-                    <h2 className="text-3xl md:text-4xl font-bold">Join The Big Tournament</h2>
+                <div className="text-center space-y-4">
+                    <h2 className="text-3xl md:text-4xl font-bold flex items-center justify-center gap-3"><Swords/> Join The Big Tournament <Swords/></h2>
                     <p className="text-gray-300 max-w-md mx-auto">Welcome to Airena - The real generation streaming platform for gamers. Join the big tournament and win exciting prizes and show your skills.</p>
-                    <button className="bg-white text-black px-10 py-3 rounded-lg font-bold hover:bg-gray-200 transition-colors">1 vs 1</button>
+                    <button className="bg-white text-black px-10 py-3 rounded-lg font-bold hover:bg-gray-200 transition-all transform hover:scale-105">1 vs 1</button>
                 </div>
 
                 {/* Player 2 */}
-                <div className="w-full md:w-1/4 flex justify-center">
-                     <AppImage src="https://i.imgur.com/vthLdJk.png" alt="Player Sage" className="w-48 md:w-64" fallbackText="Player 2" />
+                <div className="w-full md:w-auto flex justify-center">
+                     <AppImage src="/player2.jpg" alt="Player Sage" className="w-40 md:w-48" fallbackText="Player 2" />
                 </div>
             </div>
         </div>
@@ -205,7 +221,7 @@ const BigTournamentSection = () => (
 const FoundersClubSection = () => (
     <section className="py-20 sm:py-28 px-4 sm:px-8">
         <div className="container mx-auto text-center max-w-3xl bg-[#181818]/30 backdrop-blur-sm border border-white/5 rounded-2xl p-8 md:p-12">
-            <h2 className="text-3xl md:text-4xl font-bold">Join the Founders' Club</h2>
+            <h2 className="text-3xl md:text-4xl font-bold flex items-center justify-center gap-3"><Crown/> Join the Founders' Club</h2>
             <p className="text-gray-400 my-4">Be among the first 200 content creators to shape the future of Airena</p>
             <form className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-8">
                 <input type="email" placeholder="Enter your email" className="bg-gray-800 border border-gray-700 text-white px-6 py-3 rounded-lg w-full sm:w-80 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all" />
@@ -227,7 +243,7 @@ const LeaderboardSection = () => {
     return (
         <section className="py-16 sm:py-24 px-4 sm:px-8">
             <div className="container mx-auto">
-                <div className="flex justify-between items-center mb-8"><h2 className="text-3xl font-bold">Tournament Leaderboard</h2><Trophy className="text-emerald-500" size={32} /></div>
+                <div className="flex justify-between items-center mb-8"><h2 className="text-3xl font-bold flex items-center gap-3"><Trophy className="text-emerald-500" /> Tournament Leaderboard</h2></div>
                 <div className="bg-[#181818]/50 backdrop-blur-sm border border-white/5 rounded-lg overflow-hidden">
                     <div className="overflow-x-auto">
                         <table className="w-full min-w-[600px] text-left">
@@ -273,28 +289,58 @@ const Footer = () => (
 
 // --- MAIN PAGE COMPONENT ---
 export default function AirenaHomePage() {
+    useEffect(() => {
+        const handleMouseMove = (e: MouseEvent) => {
+            document.documentElement.style.setProperty('--mouse-x', `${e.clientX}px`);
+            document.documentElement.style.setProperty('--mouse-y', `${e.clientY}px`);
+        };
+        window.addEventListener('mousemove', handleMouseMove);
+        return () => {
+            window.removeEventListener('mousemove', handleMouseMove);
+        };
+    }, []);
+
     return (
-        <div className="bg-black text-white font-sans antialiased relative isolate overflow-x-hidden">
-            {/* Background Gradient Glow */}
-            <div className="absolute inset-x-0 top-0 -z-10 transform-gpu overflow-hidden blur-3xl" aria-hidden="true">
-                <div className="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#059669] to-[#34d399] opacity-20 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]"></div>
-            </div>
+        <>
+            <style jsx global>{`
+                .mouse-gradient-background::before {
+                    content: '';
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background: radial-gradient(
+                        400px at var(--mouse-x) var(--mouse-y),
+                        rgba(29, 78, 216, 0.15),
+                        transparent 80%
+                    );
+                    z-index: -10;
+                    pointer-events: none;
+                }
+            `}</style>
+            <div className="bg-black text-white font-sans antialiased relative isolate overflow-x-hidden mouse-gradient-background">
+                {/* Background Gradient Glow */}
+                <div className="absolute inset-x-0 top-0 -z-10 transform-gpu overflow-hidden blur-3xl" aria-hidden="true">
+                    <div className="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1-2 rotate-[30deg] bg-gradient-to-tr from-[#059669] to-[#34d399] opacity-20 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]"></div>
+                </div>
 
-            <Header />
-            <main>
-                <HeroSection />
-                <CategoriesSection />
-                <FeaturedVideoSection />
-                <BigTournamentSection />
-                <FoundersClubSection />
-                <LeaderboardSection />
-            </main>
-            <Footer />
+                <Header />
+                <main>
+                    <HeroSection />
+                    <CategoriesSection />
+                    <FeaturedVideoSection />
+                    <BigTournamentSection />
+                    <FoundersClubSection />
+                    <LeaderboardSection />
+                </main>
+                <Footer />
 
-            {/* Background Gradient Glow */}
-            <div className="absolute inset-x-0 bottom-0 -z-10 transform-gpu overflow-hidden blur-3xl" aria-hidden="true">
-                <div className="relative left-[calc(50%+3rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 bg-gradient-to-tr from-[#059669] to-[#34d399] opacity-20 sm:left-[calc(50%+36rem)] sm:w-[72.1875rem]"></div>
+                {/* Background Gradient Glow for Leaderboard */}
+                <div className="absolute inset-x-0 top-[60%] -z-10 transform-gpu overflow-hidden blur-3xl" aria-hidden="true">
+                     <div className="relative left-[calc(50%+3rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1-2 bg-gradient-to-tr from-[#059669] to-[#34d399] opacity-10 sm:left-[calc(50%+36rem)] sm:w-[72.1875rem]"></div>
+                </div>
             </div>
-        </div>
+        </>
     );
 }
