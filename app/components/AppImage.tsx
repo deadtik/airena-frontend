@@ -4,7 +4,7 @@ import React from 'react';
 
 // Generic Image component with error handling
 const AppImage: React.FC<{ src: string; alt: string; className: string; fallbackText: string; }> = ({ src, alt, className, fallbackText }) => (
-    <img
+    <img 
         src={src}
         alt={alt}
         className={className}
