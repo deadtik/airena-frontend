@@ -10,7 +10,7 @@ const BigTournamentSection = () => (
             <div className="flex flex-col md:flex-row items-center justify-around gap-8">
                 {/* Player 1 */}
                 <div className="w-full md:w-auto flex justify-center">
-                    <AppImage src="/player1.jpg" alt="Player Phoenix" className="w-40 md:w-full" fallbackText="Player 1" />
+                    <AppImage src="/player1.jpg" alt="Player Phoenix" className="w-40 md:w-100" fallbackText="Player 1" />
                 </div>
                 
                 {/* Center Content */}
@@ -22,7 +22,7 @@ const BigTournamentSection = () => (
 
                 {/* Player 2 */}
                 <div className="w-full md:w-auto flex justify-center">
-                     <AppImage src="/player2.jpg" alt="Player Sage" className="w-40 md:w-full" fallbackText="Player 2" />
+                     <AppImage src="/player2.jpg" alt="Player Sage" className="w-40 md:w-100" fallbackText="Player 2" />
                 </div>
             </div>
         </div>
