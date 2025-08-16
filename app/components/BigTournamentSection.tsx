@@ -30,5 +30,9 @@ const BigTournamentSection = () => (
 );
 
 
+//Testing Github connectivity
+// This component is designed to be used in a React application, specifically within the Airena frontend.
+// It showcases a section for a big tournament with player images and a call to action.
+
 export default BigTournamentSection;
 
