@@ -22,7 +22,7 @@ const AppImage: React.FC<AppImageProps> = ({ src, alt, className, fallbackText }
                     src={currentSrc}
                     alt={alt}
                     fill
-                    style={{ objectFit: 'contain' }}
+                    style={{ objectFit: 'cover' }}
                     onError={() => {
                         setCurrentSrc(`https://placehold.co/600x400/111111/FFFFFF?text=${encodeURIComponent(fallbackText)}`);
                     }}
