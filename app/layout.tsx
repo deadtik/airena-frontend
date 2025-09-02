@@ -6,7 +6,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
 import { AuthProvider } from "./context/AuthContext"; // ✅ Import AuthProvider
-import { auth } from "./firebase/config"; // ✅ Keep Firebase auth if you need it
+// import { auth } from "./firebase/config"; // ✅ Keep Firebase auth if you need it
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

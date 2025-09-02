@@ -4,6 +4,7 @@
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { X, Mail, Key } from "lucide-react";
+import { FirebaseError } from "firebase/app";
 
 export default function AuthModal() {
   const { loginWithGoogle, loginWithEmail, signupWithEmail, setIsModalOpen } = useAuth();
@@ -23,15 +24,18 @@ export default function AuthModal() {
       } else {
         await signupWithEmail(email, password);
       }
-      // The context will handle closing the modal on successful login
-    } catch (err: any) {
-      // Map common Firebase errors to user-friendly messages
-      if (err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password') {
-        setError("Invalid email or password.");
-      } else if (err.code === 'auth/email-already-in-use') {
-        setError("An account with this email already exists.");
+    } catch (err) {
+      // Use FirebaseError for specific error codes
+      if (err instanceof FirebaseError) {
+        if (err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
+            setError("Invalid email or password.");
+        } else if (err.code === 'auth/email-already-in-use') {
+            setError("An account with this email already exists.");
+        } else {
+            setError("An error occurred. Please try again.");
+        }
       } else {
-        setError("An error occurred. Please try again.");
+        setError("An unexpected error occurred.");
       }
     } finally {
         setLoading(false);
@@ -43,8 +47,7 @@ export default function AuthModal() {
     setLoading(true);
     try {
       await loginWithGoogle();
-      // The context will handle closing the modal on successful login
-    } catch (err: any) {
+    } catch (err) {
       setError("Could not sign in with Google. Please try again.");
     } finally {
         setLoading(false);
