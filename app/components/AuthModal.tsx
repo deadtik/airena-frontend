@@ -25,7 +25,6 @@ export default function AuthModal() {
         await signupWithEmail(email, password);
       }
     } catch (err) {
-      // Use FirebaseError for specific error codes
       if (err instanceof FirebaseError) {
         if (err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
             setError("Invalid email or password.");
@@ -33,6 +32,7 @@ export default function AuthModal() {
             setError("An account with this email already exists.");
         } else {
             setError("An error occurred. Please try again.");
+            console.error("Firebase Error:", err);
         }
       } else {
         setError("An unexpected error occurred.");
@@ -48,6 +48,7 @@ export default function AuthModal() {
     try {
       await loginWithGoogle();
     } catch (err) {
+      console.error("Google Sign-In Error:", err);
       setError("Could not sign in with Google. Please try again.");
     } finally {
         setLoading(false);
