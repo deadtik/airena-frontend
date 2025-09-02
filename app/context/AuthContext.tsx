@@ -1,49 +1,85 @@
 // app/context/AuthContext.tsx
 "use client";
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { auth } from '@/app/firebase/config';
-import { onAuthStateChanged, User } from 'firebase/auth';
-import AuthModal from '@/app/components/AuthModal';
+
+import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import { 
+  onAuthStateChanged,
+  signInWithPopup,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  signOut,
+  User 
+} from "firebase/auth";
+import { auth, googleProvider } from "../firebase/config";
+import AuthModal from "../components/AuthModal"; // Import the modal here
 
 interface AuthContextType {
-    user: User | null;
-    loading: boolean;
-    isModalOpen: boolean;
-    setIsModalOpen: (isOpen: boolean) => void;
+  user: User | null;
+  loading: boolean;
+  isModalOpen: boolean; // Add this
+  setIsModalOpen: (isOpen: boolean) => void; // Add this
+  loginWithGoogle: () => Promise<void>;
+  loginWithEmail: (email: string, password: string) => Promise<void>;
+  signupWithEmail: (email: string, password: string) => Promise<void>;
+  logout: () => Promise<void>;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-    const [user, setUser] = useState<User | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [isModalOpen, setIsModalOpen] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false); // Add state for the modal
 
-    useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-            setUser(currentUser);
-            setLoading(false);
-            // We no longer automatically open the modal here.
-            // It will only open on user action (clicking "Sign In").
-        });
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      setUser(firebaseUser);
+      setLoading(false);
+      if (firebaseUser) {
+        setIsModalOpen(false); // Close modal if user logs in
+      }
+    });
+    return () => unsubscribe();
+  }, []);
 
-        return () => unsubscribe(); // Cleanup subscription on unmount
-    }, []);
+  const loginWithGoogle = async () => {
+    await signInWithPopup(auth, googleProvider);
+  };
 
-    const value = { user, loading, isModalOpen, setIsModalOpen };
+  const loginWithEmail = async (email: string, password: string) => {
+    await signInWithEmailAndPassword(auth, email, password);
+  };
 
-    return (
-        <AuthContext.Provider value={value}>
-            {children}
-            {isModalOpen && !user && <AuthModal onClose={() => setIsModalOpen(false)} />}
-        </AuthContext.Provider>
-    );
+  const signupWithEmail = async (email: string, password: string) => {
+    await createUserWithEmailAndPassword(auth, email, password);
+  };
+
+  const logout = async () => {
+    await signOut(auth);
+  };
+
+  return (
+    <AuthContext.Provider 
+      value={{ 
+        user, 
+        loading, 
+        isModalOpen,      // Provide the state
+        setIsModalOpen,   // Provide the function
+        loginWithGoogle, 
+        loginWithEmail, 
+        signupWithEmail, 
+        logout 
+      }}
+    >
+      {children}
+      {/* Conditionally render the modal here */}
+      {isModalOpen && !user && <AuthModal />}
+    </AuthContext.Provider>
+  );
 };
 
 export const useAuth = () => {
-    const context = useContext(AuthContext);
-    if (context === undefined) {
-        throw new Error('useAuth must be used within an AuthProvider');
-    }
-    return context;
+  const ctx = useContext(AuthContext);
+  if (!ctx) throw new Error("useAuth must be used inside AuthProvider");
+  return ctx;
 };

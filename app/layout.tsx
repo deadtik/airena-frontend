@@ -5,8 +5,8 @@ import React, { useEffect } from "react";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
-// ✅ Import AuthProvider
-import { AuthProvider } from "./context/AuthContext";
+import { AuthProvider } from "./context/AuthContext"; // ✅ Import AuthProvider
+import { auth } from "./firebase/config"; // ✅ Keep Firebase auth if you need it
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -57,7 +57,7 @@ export default function RootLayout({
           }
         `}</style>
 
-        {/* ✅ Wrap everything inside AuthProvider */}
+        {/* ✅ Wrap children in AuthProvider */}
         <AuthProvider>
           <div className="bg-black text-white font-sans relative isolate overflow-x-hidden mouse-gradient-background">
             {/* Background Gradient Glow 1 */}
