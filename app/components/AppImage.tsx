@@ -21,7 +21,7 @@ const AppImage: React.FC<AppImageProps> = ({ src, alt, className, fallbackText }
                     src={src}
                     alt={alt}
                     fill
-                    style={{ objectFit: 'contain' }} // or 'cover' depending on need
+                    style={{ objectFit: 'cover' }} // or 'cover' depending on need
                     onError={(e) => {
                         const target = e.target as HTMLImageElement;
                         target.onerror = null;
