@@ -9,13 +9,17 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@tiptap/react": "^3.3.0",
+    "@tiptap/starter-kit": "^3.3.0",
     "firebase": "^12.1.0",
+    "firebase-admin": "^13.5.0",
     "lucide-react": "^0.539.0",
     "next": "15.4.6",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-phone-number-input": "^3.4.12",
-    "react-player": "^3.3.1"
+    "react-player": "^3.3.1",
+    "slugify": "^1.6.6"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
