@@ -17,7 +17,7 @@ admin.initializeApp({
 
 // -------------------------------------------------------------------
 // PASTE THE USER UID FROM THE FIREBASE CONSOLE HERE
-const uid = "8TJKPRxXmEPyE03cQbn88ro5l473"; 
+const uid = "1oElZfI82SOEnL3BDwHEAuMWbsw2"; 
 const newUsername = "Airena Blogs";
 // -------------------------------------------------------------------
 
