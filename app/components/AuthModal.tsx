@@ -48,7 +48,6 @@ export default function AuthModal() {
     try {
       await loginWithGoogle();
     } catch (err) {
-      // You can add more specific error handling here if needed
       setError("Could not sign in with Google. Please try again.");
     } finally {
         setLoading(false);
@@ -64,8 +63,8 @@ export default function AuthModal() {
         >
           <X />
         </button>
-        {/* ... rest of the modal JSX remains the same ... */}
-        <h2 className="text-2xl font-bold text-center mb-2 text-white">
+        {/* The rest of your modal's JSX remains the same */}
+         <h2 className="text-2xl font-bold text-center mb-2 text-white">
           {mode === "login" ? "Welcome Back" : "Create Account"}
         </h2>
         <p className="text-center text-gray-400 text-sm mb-6">
