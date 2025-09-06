@@ -7,9 +7,9 @@ import { collection, getDocs, orderBy, query, Timestamp } from 'firebase/firesto
 import Header from '@/app/components/Header';
 import Footer from '@/app/components/Footer';
 import BlogCard from '@/app/components/BlogCard';
-import AppImage from '@/app/components/AppImage';
+// import AppImage from '@/app/components/AppImage';
 import { useAuth } from '@/app/context/AuthContext';
-import { PenSquare, BookOpen } from 'lucide-react';
+// import { PenSquare, BookOpen } from 'lucide-react';
 
 interface Post {
     id: string;

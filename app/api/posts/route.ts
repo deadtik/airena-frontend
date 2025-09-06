@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db, storage as adminStorage, authAdmin } from '@/app/firebase/firebaseAdmin'; 
 import { Timestamp } from 'firebase-admin/firestore';
 import slugify from 'slugify';
+// We no longer need to import FirebaseError
 
 export async function POST(req: NextRequest) {
     try {
@@ -12,7 +13,6 @@ export async function POST(req: NextRequest) {
         }
         
         const decodedToken = await authAdmin.verifyIdToken(idToken);
-        // Admin Check
         if (decodedToken.admin !== true) {
             return NextResponse.json({ error: 'Forbidden: User is not an admin.' }, { status: 403 });
         }
@@ -22,25 +22,19 @@ export async function POST(req: NextRequest) {
         const title = formData.get('title') as string;
         const content = formData.get('content') as string;
         const image = formData.get('image') as File;
-        const isFeatured = formData.get('isFeatured') === 'true'; // Convert string to boolean
+        const isFeatured = formData.get('isFeatured') === 'true';
 
         if (!title || !content || !image) {
             return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
         }
         
-        // --- TRANSACTION LOGIC FOR TOP STORY ---
         if (isFeatured) {
-            // Find any existing featured post
             const featuredQuery = db.collection('posts').where('isFeatured', '==', true).limit(1);
             const featuredSnapshot = await featuredQuery.get();
-            
-            // If one exists, un-feature it
             if (!featuredSnapshot.empty) {
-                const oldFeaturedDoc = featuredSnapshot.docs[0];
-                await oldFeaturedDoc.ref.update({ isFeatured: false });
+                await featuredSnapshot.docs[0].ref.update({ isFeatured: false });
             }
         }
-        // -------------------------------------
 
         const bucket = adminStorage.bucket();
         const fileName = `${Date.now()}_${slugify(image.name, { lower: true })}`;
@@ -54,22 +48,25 @@ export async function POST(req: NextRequest) {
         const slug = slugify(title, { lower: true, strict: true, trim: true });
         
         const postData = {
-            title,
-            content,
-            imageUrl,
-            slug,
-            authorId: user.uid,
-            authorName: user.name,
-            createdAt: Timestamp.now(),
-            isFeatured: isFeatured, // Save the new flag to the database
+            title, content, imageUrl, slug,
+            authorId: user.uid, authorName: user.name,
+            createdAt: Timestamp.now(), isFeatured,
         };
         
         const postRef = await db.collection('posts').add(postData);
 
         return NextResponse.json({ id: postRef.id, slug }, { status: 201 });
 
-    } catch (error: any) {
-        console.error('API Route Error:', error.message); 
+    } catch (error: unknown) { // Use 'unknown' for better type safety
+        console.error('API Route Error:', (error as Error).message);
+        
+        // --- THIS IS THE FIX ---
+        // We check if the error object has a 'code' property instead of using 'instanceof'
+        if (error && typeof error === 'object' && 'code' in error && (error as {code: string}).code === 'auth/id-token-expired') {
+            return NextResponse.json({ error: 'Authentication token has expired.' }, { status: 401 });
+        }
+        // -----------------------
+
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }
 }
