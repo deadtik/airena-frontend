@@ -26,7 +26,7 @@ const BlogCard: React.FC<BlogCardProps> = ({ post, isLarge = false }) => {
 
     return (
         <Link 
-            href={`/blog/${post.slug}`} 
+            href={`/blogs/${post.slug}`} 
             className={`block group bg-[#1c1c1c] rounded-2xl overflow-hidden transform hover:-translate-y-2 transition-all duration-300 shadow-lg hover:shadow-emerald-500/20 border border-gray-800 hover:border-emerald-500/50 ${isLarge ? 'md:col-span-2' : ''}`}
         >
             <div className={`relative w-full overflow-hidden ${isLarge ? 'h-64' : 'h-48'}`}>

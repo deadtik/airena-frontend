@@ -7,8 +7,14 @@ import { Bold, Italic, Strikethrough, List, ListOrdered, Heading2, Quote } from 
 
 const EditorToolbar = ({ editor }: { editor: Editor | null }) => {
     if (!editor) return null;
-    const buttonClass = (name: string, opts?: {}) => 
-        `p-2 rounded transition-colors ${editor.isActive(name, opts) ? 'bg-emerald-500/30 text-emerald-300' : 'text-gray-400 hover:bg-gray-700'}`;
+
+    const buttonClass = (name: string, opts?: Record<string, unknown>) =>
+        `p-2 rounded transition-colors ${
+            editor.isActive(name, opts)
+                ? 'bg-emerald-500/30 text-emerald-300'
+                : 'text-gray-400 hover:bg-gray-700'
+        }`;
+
     return (
         <div className="flex items-center gap-1 p-2 border-b border-gray-700 flex-wrap">
             <button type="button" onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} className={buttonClass('heading', { level: 2 })}><Heading2 size={18} /></button>
