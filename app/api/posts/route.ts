@@ -62,11 +62,16 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ id: postRef.id, slug }, { status: 201 });
 
-  } catch (error: any) {
-    console.error('API Route Error:', error.message);
-    if (error.code === 'auth/id-token-expired') {
-      return NextResponse.json({ error: 'Authentication token has expired. Please log in again.' }, { status: 401 });
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error('API Route Error:', error.message);
+      if ((error as { code?: string }).code === 'auth/id-token-expired') {
+        return NextResponse.json({ error: 'Authentication token has expired. Please log in again.' }, { status: 401 });
+      }
+      return NextResponse.json({ error: 'Internal Server Error', details: error.message }, { status: 500 });
     }
-    return NextResponse.json({ error: 'Internal Server Error', details: error.message }, { status: 500 });
+
+    console.error('Unexpected API Route Error:', error);
+    return NextResponse.json({ error: 'Internal Server Error', details: 'Unknown error' }, { status: 500 });
   }
 }
