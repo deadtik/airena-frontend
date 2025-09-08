@@ -2,21 +2,33 @@
 import { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
+  // This section fixes the "Cross-Origin-Opener-Policy" error
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'Cross-Origin-Opener-Policy',
+            value: 'same-origin-allow-popups',
+          },
+        ],
+      },
+    ];
+  },
   images: {
     remotePatterns: [
       {
         protocol: 'https',
-        // This is the primary hostname for Firebase Storage public URLs
         hostname: 'storage.googleapis.com',
       },
       {
         protocol: 'https',
-        // This is the hostname for Firebase Storage download URLs (the one in your error)
         hostname: 'firebasestorage.googleapis.com',
       },
       {
         protocol: 'https',
-        hostname: 'images.unsplash.com', // For your placeholder content
+        hostname: 'images.unsplash.com',
       },
     ],
   },
