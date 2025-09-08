@@ -1,21 +1,22 @@
-// next.config.ts
 import { NextConfig } from 'next';
 
+/**
+ * @type {import('next').NextConfig}
+ */
 const nextConfig: NextConfig = {
-  // This section fixes the "Cross-Origin-Opener-Policy" error
   async headers() {
     return [
       {
-        source: '/(.*)',
+        source: '/:path*',
         headers: [
           {
             key: 'Cross-Origin-Opener-Policy',
-            value: 'same-origin-allow-popups',
-          },
+            value: 'same-origin-allow-popups',           },
         ],
       },
     ];
   },
+
   images: {
     remotePatterns: [
       {
@@ -24,6 +25,7 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
+
         hostname: 'firebasestorage.googleapis.com',
       },
       {

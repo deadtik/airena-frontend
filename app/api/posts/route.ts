@@ -3,7 +3,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db, storage as adminStorage, authAdmin } from '@/app/firebase/firebaseAdmin'; 
 import { Timestamp } from 'firebase-admin/firestore';
 import slugify from 'slugify';
-import { FirebaseError } from 'firebase/app';
 
 export async function POST(req: NextRequest) {
     try {
@@ -42,8 +41,15 @@ export async function POST(req: NextRequest) {
         const imageBuffer = Buffer.from(await image.arrayBuffer());
         
         await file.save(imageBuffer, { metadata: { contentType: image.type } });
-        await file.makePublic();
-        const imageUrl = file.publicUrl();
+        
+        // --- THIS IS THE DEFINITIVE FIX ---
+        // We will now generate a long-lived Signed URL instead of making the file public.
+        // This bypasses the need for public IAM permissions.
+        const [imageUrl] = await file.getSignedUrl({
+            action: 'read',
+            expires: '03-09-2491' // Set a very long expiration date
+        });
+        // --------------------------------
 
         const slug = slugify(title, { lower: true, strict: true, trim: true });
         
@@ -57,11 +63,8 @@ export async function POST(req: NextRequest) {
 
         return NextResponse.json({ id: postRef.id, slug }, { status: 201 });
 
-    } catch (error) {
+    } catch (error: any) {
         console.error('API Route Error:', (error as Error).message);
-        if (error instanceof FirebaseError && error.code === 'auth/id-token-expired') {
-            return NextResponse.json({ error: 'Authentication token has expired.' }, { status: 401 });
-        }
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }
 }
