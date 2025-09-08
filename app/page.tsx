@@ -44,7 +44,7 @@ export default function HomePage() {
                     <FeaturedVideoSection />
                     <BigTournamentSection />
                     <FoundersClubSection />
-                    <LeaderboardSection />
+                   
                 </main>
                 <Footer />
 

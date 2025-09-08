@@ -23,6 +23,7 @@ interface AuthContextType {
   loginWithEmail: (email: string, password: string) => Promise<void>;
   signupWithEmail: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
+  signIn: () => Promise<void>; // ✅ new shorthand function
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -37,12 +38,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       setUser(firebaseUser);
       if (firebaseUser) {
-        // Force a token refresh to get the latest custom claims (like admin role)
+        // Force token refresh to get updated claims
         const idTokenResult = await firebaseUser.getIdTokenResult(true);
         setIsAdmin(!!idTokenResult.claims.admin);
-        setIsModalOpen(false); // Close modal on successful login/state change
+        setIsModalOpen(false);
       } else {
-        setIsAdmin(false); // No user, not an admin
+        setIsAdmin(false);
       }
       setLoading(false);
     });
@@ -65,6 +66,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     await signOut(auth);
   };
 
+  // ✅ Generic signIn (currently defaults to Google login)
+  const signIn = async () => {
+    await loginWithGoogle();
+  };
+
   const value = { 
     user, 
     loading, 
@@ -74,13 +80,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     loginWithGoogle, 
     loginWithEmail, 
     signupWithEmail, 
-    logout 
+    logout,
+    signIn // ✅ exposed
   };
 
   return (
     <AuthContext.Provider value={value}>
       {children}
-      {/* The modal is now controlled only by the isModalOpen state */}
+      {/* Modal controlled only by isModalOpen */}
       {isModalOpen && !user && <AuthModal />}
     </AuthContext.Provider>
   );

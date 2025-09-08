@@ -25,12 +25,17 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
-
         hostname: 'firebasestorage.googleapis.com',
       },
       {
         protocol: 'https',
         hostname: 'images.unsplash.com',
+      },
+      // --- THIS IS THE FIX ---
+      // Add this new object to allow images from Imgur
+      {
+        protocol: 'https',
+        hostname: 'i.imgur.com',
       },
     ],
   },
