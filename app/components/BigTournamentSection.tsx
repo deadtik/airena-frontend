@@ -32,4 +32,3 @@ const BigTournamentSection = () => (
 // I guess I fixed the mismatch
 
 export default BigTournamentSection;
-

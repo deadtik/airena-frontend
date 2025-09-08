@@ -1,25 +1,44 @@
 // app/blogs/[slug]/page.tsx
-import { db } from "@/app/firebase/firebaseAdmin"; // admin SDK
+import { db } from "@/app/firebase/firebaseAdmin";
+import { notFound } from "next/navigation";
 import Header from "@/app/components/Header";
 import Footer from "@/app/components/Footer";
 import AppImage from "@/app/components/AppImage";
 
-export default async function BlogPostPage({ params }: { params: { slug: string } }) {
-  const postsRef = db.collection("posts");
-  const snapshot = await postsRef.where("slug", "==", params.slug).get();
+interface Post {
+  id: string;
+  title: string;
+  authorName: string;
+  createdAt: Date;
+  imageUrl: string;
+  content: string;
+}
+
+export default async function BlogPostPage(props: { params: Promise<{ slug: string }> }) {
+  const { slug } = await props.params;  // ✅ Await params
+
+  const snapshot = await db
+    .collection("posts")
+    .where("slug", "==", slug)
+    .get();
 
   if (snapshot.empty) {
-    return (
-      <div className="bg-black h-screen flex items-center justify-center text-white">
-        Post not found.
-      </div>
-    );
+    notFound();
   }
 
-  const post = snapshot.docs[0].data();
+  const doc = snapshot.docs[0];
+  const data = doc.data();
+  const post: Post = {
+    id: doc.id,
+    title: data.title,
+    authorName: data.authorName,
+    createdAt: data.createdAt?.toDate?.() || new Date(),
+    imageUrl: data.imageUrl,
+    content: data.content,
+  };
 
   return (
-    <div className="bg-black text-white">
+    <div className="bg-transparent">
       <Header />
       <main className="pt-24 pb-16 min-h-screen">
         <article className="container mx-auto px-4 max-w-4xl">
@@ -33,7 +52,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
           </div>
           <p className="text-sm text-gray-500 mb-4">
             {post.authorName} •{" "}
-            {post.createdAt.toDate().toLocaleDateString("en-US", {
+            {post.createdAt.toLocaleDateString("en-US", {
               year: "numeric",
               month: "long",
               day: "numeric",

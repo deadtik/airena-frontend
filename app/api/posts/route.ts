@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db, storage as adminStorage, authAdmin } from '@/app/firebase/firebaseAdmin'; 
 import { Timestamp } from 'firebase-admin/firestore';
 import slugify from 'slugify';
-// We no longer need to import FirebaseError
+import { FirebaseError } from 'firebase/app';
 
 export async function POST(req: NextRequest) {
     try {
@@ -57,16 +57,11 @@ export async function POST(req: NextRequest) {
 
         return NextResponse.json({ id: postRef.id, slug }, { status: 201 });
 
-    } catch (error: unknown) { // Use 'unknown' for better type safety
+    } catch (error) {
         console.error('API Route Error:', (error as Error).message);
-        
-        // --- THIS IS THE FIX ---
-        // We check if the error object has a 'code' property instead of using 'instanceof'
-        if (error && typeof error === 'object' && 'code' in error && (error as {code: string}).code === 'auth/id-token-expired') {
+        if (error instanceof FirebaseError && error.code === 'auth/id-token-expired') {
             return NextResponse.json({ error: 'Authentication token has expired.' }, { status: 401 });
         }
-        // -----------------------
-
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }
 }

@@ -1,7 +1,7 @@
 // components/BlogCard.tsx
 import React from 'react';
 import Link from 'next/link';
-import AppImage from './AppImage'; // Assuming you have this component
+import AppImage from './AppImage';
 import { ArrowUpRight } from 'lucide-react';
 
 interface Post {
@@ -16,7 +16,7 @@ interface Post {
 
 interface BlogCardProps {
     post: Post;
-    isLarge?: boolean; // New prop for larger cards in the grid
+    isLarge?: boolean;
 }
 
 const BlogCard: React.FC<BlogCardProps> = ({ post, isLarge = false }) => {
@@ -25,8 +25,9 @@ const BlogCard: React.FC<BlogCardProps> = ({ post, isLarge = false }) => {
     }
 
     return (
+        // FIX: Corrected the link path from "/blogs/" to "/blog/"
         <Link 
-            href={`/blogs/${post.slug}`} 
+            href={`/blog/${post.slug}`} 
             className={`block group bg-[#1c1c1c] rounded-2xl overflow-hidden transform hover:-translate-y-2 transition-all duration-300 shadow-lg hover:shadow-emerald-500/20 border border-gray-800 hover:border-emerald-500/50 ${isLarge ? 'md:col-span-2' : ''}`}
         >
             <div className={`relative w-full overflow-hidden ${isLarge ? 'h-64' : 'h-48'}`}>

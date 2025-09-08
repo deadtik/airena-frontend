@@ -11,13 +11,14 @@ import {
   User 
 } from "firebase/auth";
 import { auth, googleProvider } from "../firebase/config";
-import AuthModal from "../components/AuthModal"; // Import the modal here
+import AuthModal from "../components/AuthModal";
 
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  isModalOpen: boolean; // Add this
-  setIsModalOpen: (isOpen: boolean) => void; // Add this
+  isAdmin: boolean;
+  isModalOpen: boolean;
+  setIsModalOpen: (isOpen: boolean) => void;
   loginWithGoogle: () => Promise<void>;
   loginWithEmail: (email: string, password: string) => Promise<void>;
   signupWithEmail: (email: string, password: string) => Promise<void>;
@@ -29,15 +30,21 @@ const AuthContext = createContext<AuthContextType | null>(null);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const [isModalOpen, setIsModalOpen] = useState(false); // Add state for the modal
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       setUser(firebaseUser);
-      setLoading(false);
       if (firebaseUser) {
-        setIsModalOpen(false); // Close modal if user logs in
+        // Force a token refresh to get the latest custom claims (like admin role)
+        const idTokenResult = await firebaseUser.getIdTokenResult(true);
+        setIsAdmin(!!idTokenResult.claims.admin);
+        setIsModalOpen(false); // Close modal on successful login/state change
+      } else {
+        setIsAdmin(false); // No user, not an admin
       }
+      setLoading(false);
     });
     return () => unsubscribe();
   }, []);
@@ -58,21 +65,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     await signOut(auth);
   };
 
+  const value = { 
+    user, 
+    loading, 
+    isAdmin,
+    isModalOpen,
+    setIsModalOpen,
+    loginWithGoogle, 
+    loginWithEmail, 
+    signupWithEmail, 
+    logout 
+  };
+
   return (
-    <AuthContext.Provider 
-      value={{ 
-        user, 
-        loading, 
-        isModalOpen,      // Provide the state
-        setIsModalOpen,   // Provide the function
-        loginWithGoogle, 
-        loginWithEmail, 
-        signupWithEmail, 
-        logout 
-      }}
-    >
+    <AuthContext.Provider value={value}>
       {children}
-      {/* Conditionally render the modal here */}
+      {/* The modal is now controlled only by the isModalOpen state */}
       {isModalOpen && !user && <AuthModal />}
     </AuthContext.Provider>
   );
