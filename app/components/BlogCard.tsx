@@ -16,7 +16,7 @@ interface Post {
 
 interface BlogCardProps {
     post: Post;
-    isLarge?: boolean;
+    isLarge?: boolean; // New prop for larger cards in the grid
 }
 
 const BlogCard: React.FC<BlogCardProps> = ({ post, isLarge = false }) => {
@@ -25,16 +25,15 @@ const BlogCard: React.FC<BlogCardProps> = ({ post, isLarge = false }) => {
     }
 
     return (
-        // FIX: Corrected the link path from "/blogs/" to "/blog/"
         <Link 
-            href={`/blog/${post.slug}`} 
-            className={`block group bg-[#1c1c1c] rounded-2xl overflow-hidden transform hover:-translate-y-2 transition-all duration-300 shadow-lg hover:shadow-emerald-500/20 border border-gray-800 hover:border-emerald-500/50 ${isLarge ? 'md:col-span-2' : ''}`}
+            href={`/blogs/${post.slug}`} 
+            className={`block group bg-white/5 backdrop-blur-md rounded-2xl overflow-hidden transform hover:-translate-y-2 transition-all duration-300 shadow-lg hover:shadow-emerald-500/20 border border-white/10 hover:border-emerald-500/50 ${isLarge ? 'md:col-span-2' : ''}`}
         >
             <div className={`relative w-full overflow-hidden ${isLarge ? 'h-64' : 'h-48'}`}>
                 <AppImage 
                     src={post.imageUrl} 
                     alt={post.title} 
-                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    className="group-hover:scale-105 transition-transform duration-500"
                     fallbackText={post.title} 
                 />
                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
