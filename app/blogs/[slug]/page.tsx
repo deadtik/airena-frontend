@@ -1,7 +1,6 @@
-"use client";
-import React, { useState, useEffect } from "react";
-import { db } from "@/app/firebase/config";
-import { collection, query, where, getDocs, Timestamp } from "firebase/firestore";
+// app/blogs/[slug]/page.tsx
+import { db } from "@/app/firebase/firebaseAdmin";
+import { notFound } from "next/navigation";
 import Header from "@/app/components/Header";
 import Footer from "@/app/components/Footer";
 import AppImage from "@/app/components/AppImage";
@@ -10,59 +9,33 @@ interface Post {
   id: string;
   title: string;
   authorName: string;
-  createdAt: Timestamp;
+  createdAt: Date;
   imageUrl: string;
   content: string;
 }
 
-// ✅ params is always defined and synchronous in Next.js App Router
-interface BlogPostPageProps {
-  params: { slug: string };
-}
+export default async function BlogPostPage(props: { params: Promise<{ slug: string }> }) {
+  const { slug } = await props.params;  // ✅ Await params
 
-export default function BlogPostPage({ params }: BlogPostPageProps) {
-  const [post, setPost] = useState<Post | null>(null);
-  const [loading, setLoading] = useState(true);
+  const snapshot = await db
+    .collection("posts")
+    .where("slug", "==", slug)
+    .get();
 
-  useEffect(() => {
-    const fetchPost = async () => {
-      try {
-        const postsCollection = collection(db, "posts");
-        const q = query(postsCollection, where("slug", "==", params.slug));
-        const querySnapshot = await getDocs(q);
-
-        if (!querySnapshot.empty) {
-          const doc = querySnapshot.docs[0];
-          setPost({ id: doc.id, ...doc.data() } as Post);
-        } else {
-          setPost(null);
-        }
-      } catch (error) {
-        console.error("Error fetching post:", error);
-        setPost(null);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchPost();
-  }, [params.slug]); // ✅ safe now
-
-  if (loading) {
-    return (
-      <div className="bg-black h-screen flex items-center justify-center text-white">
-        Loading Post...
-      </div>
-    );
+  if (snapshot.empty) {
+    notFound();
   }
 
-  if (!post) {
-    return (
-      <div className="bg-black h-screen flex items-center justify-center text-white">
-        Post not found.
-      </div>
-    );
-  }
+  const doc = snapshot.docs[0];
+  const data = doc.data();
+  const post: Post = {
+    id: doc.id,
+    title: data.title,
+    authorName: data.authorName,
+    createdAt: data.createdAt?.toDate?.() || new Date(),
+    imageUrl: data.imageUrl,
+    content: data.content,
+  };
 
   return (
     <div className="bg-transparent">
@@ -79,21 +52,17 @@ export default function BlogPostPage({ params }: BlogPostPageProps) {
           </div>
           <p className="text-sm text-gray-500 mb-4">
             {post.authorName} •{" "}
-            {post.createdAt.toDate().toLocaleDateString("en-US", {
+            {post.createdAt.toLocaleDateString("en-US", {
               year: "numeric",
               month: "long",
               day: "numeric",
             })}
           </p>
-          <h1 className="text-4xl md:text-5xl font-bold mb-8 leading-tight text-white">
-            {post.title}
-          </h1>
+          <h1 className="text-4xl md:text-5xl font-bold mb-8 leading-tight">{post.title}</h1>
           <div
-            className="prose prose-invert prose-lg max-w-none prose-p:text-gray-300 prose-h2:text-emerald-400"
+            className="prose prose-invert prose-lg max-w-none prose-p:text-gray-300 prose-h2:text-emerald-400 prose-h3:text-emerald-400"
             dangerouslySetInnerHTML={{ __html: post.content }}
           />
-          {/* <ReactionBar postId={post.id} />
-          <CommentSection postId={post.id} /> */}
         </article>
       </main>
       <Footer />
