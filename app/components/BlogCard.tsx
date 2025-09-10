@@ -1,4 +1,3 @@
-// components/BlogCard.tsx
 import React from 'react';
 import Link from 'next/link';
 import AppImage from './AppImage';
