@@ -3,13 +3,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db, authAdmin, storage as adminStorage } from '@/app/firebase/firebaseAdmin';
 import slugify from 'slugify';
 
-// --- Route context type ---
-interface RouteContext {
-  params: {
-    postId: string;
-  };
-}
-
 // --- Firestore Post type ---
 interface Post {
   title: string;
@@ -19,9 +12,12 @@ interface Post {
 }
 
 // GET: Fetch a single post's data for the edit page
-export async function GET(req: NextRequest, context: RouteContext) {
+export async function GET(
+  req: NextRequest,
+  { params }: { params: { postId: string } }
+) {
   try {
-    const { postId } = context.params;
+    const { postId } = params;
     const docRef = db.collection('posts').doc(postId);
     const doc = await docRef.get();
 
@@ -37,9 +33,12 @@ export async function GET(req: NextRequest, context: RouteContext) {
 }
 
 // PUT: Update an existing post
-export async function PUT(req: NextRequest, context: RouteContext) {
+export async function PUT(
+  req: NextRequest,
+  { params }: { params: { postId: string } }
+) {
   try {
-    const { postId } = context.params;
+    const { postId } = params;
     const idToken = req.headers.get('Authorization')?.split('Bearer ')[1];
     if (!idToken) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
@@ -84,9 +83,12 @@ export async function PUT(req: NextRequest, context: RouteContext) {
 }
 
 // DELETE: Delete a post
-export async function DELETE(req: NextRequest, context: RouteContext) {
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: { postId: string } }
+) {
   try {
-    const { postId } = context.params;
+    const { postId } = params;
     const idToken = req.headers.get('Authorization')?.split('Bearer ')[1];
     if (!idToken) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
