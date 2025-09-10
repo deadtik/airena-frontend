@@ -1,12 +1,18 @@
+// app/components/BlogEditor.tsx
 "use client";
 import React from 'react';
 import { useEditor, EditorContent, Editor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import { Bold, Italic, Strikethrough, List, ListOrdered, Heading2, Quote } from 'lucide-react';
 
+// Toolbar component for the editor
 const EditorToolbar = ({ editor }: { editor: Editor | null }) => {
-    if (!editor) return null;
-    const buttonClass = (name: string, opts?: {}) => 
+    if (!editor) {
+        return null;
+    }
+    
+    // Use a more specific type for opts to satisfy the linter
+    const buttonClass = (name: string, opts?: Record<string, any>) => 
         `p-2 rounded transition-colors ${editor.isActive(name, opts) ? 'bg-emerald-500/30 text-emerald-300' : 'text-gray-400 hover:bg-gray-700'}`;
 
     return (
@@ -27,12 +33,21 @@ interface BlogEditorProps {
     onChange: (value: string) => void;
 }
 
+// This line has been corrected (the extra .tsx has been removed)
 const BlogEditor: React.FC<BlogEditorProps> = ({ value, onChange }) => {
     const editor = useEditor({
-        extensions: [ StarterKit ],
+        extensions: [
+            StarterKit.configure({
+                heading: {
+                    levels: [1, 2, 3],
+                },
+            }),
+        ],
         content: value,
-        immediatelyRender: false, // Fixes SSR hydration error
-        onUpdate: ({ editor }) => { onChange(editor.getHTML()); },
+        immediatelyRender: false,
+        onUpdate: ({ editor }) => {
+            onChange(editor.getHTML());
+        },
         editorProps: {
             attributes: {
                 class: 'prose prose-invert prose-lg max-w-none p-4 min-h-[300px] focus:outline-none prose-p:text-gray-300 prose-h2:text-emerald-400',
@@ -47,4 +62,5 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ value, onChange }) => {
         </div>
     );
 };
+
 export default BlogEditor;

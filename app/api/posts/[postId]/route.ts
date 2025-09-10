@@ -14,7 +14,7 @@ export async function GET(req: NextRequest, { params }: { params: { postId: stri
             return NextResponse.json({ error: 'Post not found' }, { status: 404 });
         }
         return NextResponse.json({ id: doc.id, ...doc.data() }, { status: 200 });
-    } catch (error) {
+    } catch (error: unknown) {
         console.error("GET post error:", (error as Error).message);
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }
@@ -37,6 +37,7 @@ export async function PUT(req: NextRequest, { params }: { params: { postId: stri
         const isFeatured = formData.get('isFeatured') === 'true';
         
         const postRef = db.collection('posts').doc(postId);
+        // Use a more specific type for updateData
         const updateData: { [key: string]: any } = { title, content, isFeatured };
         
         if (image) {
@@ -52,7 +53,7 @@ export async function PUT(req: NextRequest, { params }: { params: { postId: stri
         await postRef.update(updateData);
         return NextResponse.json({ message: 'Post updated successfully' }, { status: 200 });
 
-    } catch (error) {
+    } catch (error: unknown) {
         console.error("PUT post error:", (error as Error).message);
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }
@@ -68,11 +69,10 @@ export async function DELETE(req: NextRequest, { params }: { params: { postId: s
         const decodedToken = await authAdmin.verifyIdToken(idToken);
         if (decodedToken.admin !== true) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
         
-        // Note: For a production app, you should also delete the associated image from Firebase Storage.
         await db.collection('posts').doc(postId).delete();
         
         return NextResponse.json({ message: 'Post deleted successfully' }, { status: 200 });
-    } catch (error) {
+    } catch (error: unknown) {
         console.error("DELETE post error:", (error as Error).message);
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }
