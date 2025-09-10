@@ -1,4 +1,3 @@
-// app/blogs/page.tsx
 "use client";
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -9,7 +8,7 @@ import Footer from '@/app/components/Footer';
 import BlogCard from '@/app/components/BlogCard';
 import AppImage from '@/app/components/AppImage';
 import { useAuth } from '@/app/context/AuthContext';
-import { PenSquare, Sparkles } from 'lucide-react';
+import { PenSquare, BookOpen } from 'lucide-react';
 
 interface Post {
     id: string;
@@ -34,24 +33,21 @@ const BlogPage = () => {
                 const q = query(postsCollection, orderBy('createdAt', 'desc'));
                 const querySnapshot = await getDocs(q);
                 
-                const postsData = querySnapshot.docs
-                    .map(doc => {
-                        const data = doc.data();
-                        if (!data.slug || !data.title || !data.createdAt) return null;
-                        const createdAtTimestamp = data.createdAt as Timestamp;
-                        return {
-                            id: doc.id,
-                            slug: data.slug,
-                            title: data.title,
-                            authorName: data.authorName || 'Anonymous',
-                            createdAt: createdAtTimestamp.toDate().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
-                            excerpt: data.content.substring(0, 150).replace(/<[^>]+>/g, '') + '...',
-                            imageUrl: data.imageUrl,
-                            isFeatured: data.isFeatured || false,
-                        };
-                    })
-                    .filter((post): post is Post => post !== null);
-
+                const postsData = querySnapshot.docs.map(doc => {
+                    const data = doc.data();
+                    if (!data.slug || !data.title || !data.createdAt) return null;
+                    const createdAtTimestamp = data.createdAt as Timestamp;
+                    return {
+                        id: doc.id,
+                        slug: data.slug,
+                        title: data.title,
+                        authorName: data.authorName || 'Anonymous',
+                        createdAt: createdAtTimestamp.toDate().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+                        excerpt: data.content.substring(0, 200).replace(/<[^>]+>/g, '') + '...',
+                        imageUrl: data.imageUrl,
+                        isFeatured: data.isFeatured || false,
+                    };
+                }).filter((post): post is Post => post !== null);
                 setPosts(postsData);
             } catch (error) {
                 console.error("Error fetching posts:", error);
@@ -64,12 +60,12 @@ const BlogPage = () => {
 
     if (loading) {
         return (
-            <div className="bg-transparent min-h-screen">
+             <div className="bg-transparent min-h-screen">
                 <Header />
                 <div className="h-screen flex items-center justify-center">
                     <div className="text-center">
                         <div className="animate-spin rounded-full h-12 w-12 border-2 border-emerald-400 border-t-transparent mx-auto mb-4"></div>
-                        <p className="text-white/80 text-lg">Loading stories...</p>
+                        <p className="text-white/80 text-lg">Loading Stories...</p>
                     </div>
                 </div>
                 <Footer />
@@ -85,110 +81,49 @@ const BlogPage = () => {
             <Header />
             <main className="pt-24 pb-12">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    
-                    {/* Elegant Header */}
-                    <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-12 pb-6 border-b border-white/10">
-                        <div className="mb-6 lg:mb-0">
-                            <div className="flex items-center gap-3 mb-3">
-                                <Sparkles className="w-6 h-6 text-emerald-400" />
-                                <span className="text-emerald-400 font-medium text-sm uppercase tracking-wider">Stories</span>
-                            </div>
-                            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-2 leading-tight">
-                                The Airena Blog
-                            </h1>
-                            <p className="text-white/60 text-base sm:text-lg max-w-lg leading-relaxed">
-                                Discover insights, updates, and stories from our community
-                            </p>
+                    <div className="text-center mb-16 border-b border-gray-800 pb-12">
+                        <div className="inline-block bg-emerald-500/10 p-4 rounded-2xl border border-emerald-500/20 mb-4">
+                            <BookOpen className="text-emerald-400" size={32} />
                         </div>
-                        
+                        <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-white">The Airena Blog</h1>
+                        <p className="text-gray-400 mt-4 text-lg max-w-2xl mx-auto">The latest news, feature updates, and stories from the Airena community and beyond.</p>
                         {isAdmin && (
-                            <Link 
-                                href="/blogs/new" 
-                                className="group bg-gradient-to-r from-emerald-500 to-emerald-600 text-white px-6 py-3 rounded-xl font-medium hover:from-emerald-600 hover:to-emerald-700 transition-all duration-300 flex items-center gap-2 shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40"
-                            >
-                                <PenSquare className="w-4 h-4 group-hover:rotate-3 transition-transform" />
-                                Write Post
+                            <Link href="/blogs/new" className="mt-8 inline-flex items-center gap-2 bg-emerald-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-emerald-600 transition-all transform hover:scale-105">
+                                <PenSquare size={18}/> Write a New Post
                             </Link>
                         )}
                     </div>
-
                     {posts.length === 0 ? (
-                        <div className="text-center py-20">
-                            <div className="max-w-md mx-auto bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8">
-                                <div className="w-16 h-16 bg-gradient-to-br from-emerald-500/20 to-emerald-600/20 rounded-full flex items-center justify-center mx-auto mb-6">
-                                    <PenSquare className="w-8 h-8 text-emerald-400" />
-                                </div>
-                                <h2 className="text-xl font-semibold text-white mb-3">No stories yet</h2>
-                                <p className="text-white/60 mb-6 leading-relaxed">
-                                    Be the first to share something amazing with the community.
-                                </p>
-                                {isAdmin && (
-                                    <Link 
-                                        href="/blogs/new" 
-                                        className="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-2.5 rounded-lg font-medium transition-colors"
-                                    >
-                                        <PenSquare className="w-4 h-4" />
-                                        Write First Post
-                                    </Link>
-                                )}
-                            </div>
+                        <div className="text-center py-24 bg-white/5 backdrop-blur-md border border-gray-800 rounded-2xl">
+                            <h2 className="text-3xl font-bold text-gray-400">No Posts Yet</h2>
+                            <p className="text-gray-500 mt-4">Be the first to share a story with the community!</p>
+                            {isAdmin && (<Link href="/blogs/new" className="mt-8 inline-block bg-emerald-500 text-white px-8 py-3 rounded-lg font-semibold hover:bg-emerald-600 transition-colors">Write the First Post</Link>)}
                         </div>
                     ) : (
                         <div className="space-y-16">
-                            {/* Featured Story */}
                             {topStory && (
                                 <div>
-                                    <div className="flex items-center gap-2 mb-6">
-                                        <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
-                                        <span className="text-white/70 font-medium text-sm uppercase tracking-wider">Featured</span>
-                                    </div>
-                                    
+                                    <h2 className="text-3xl font-bold text-gray-300 mb-6 tracking-wide">Featured Story</h2>
                                     <Link href={`/blogs/${topStory.slug}`} className="block group">
-                                        <article className="relative rounded-2xl overflow-hidden bg-white/5 backdrop-blur-sm border border-white/10 shadow-2xl shadow-black/20 hover:shadow-black/30 transition-all duration-500 hover:border-emerald-500/30">
-                                            <div className="aspect-[21/9] sm:aspect-[21/8] lg:aspect-[21/7] relative">
-                                                <AppImage 
-                                                    src={topStory.imageUrl} 
-                                                    alt={topStory.title} 
-                                                    className="opacity-40 group-hover:opacity-30 group-hover:scale-105 transition-all duration-700" 
-                                                    fallbackText="Featured Story" 
-                                                />
-                                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                                        <div className="relative rounded-2xl overflow-hidden shadow-2xl shadow-emerald-500/10 border border-gray-800">
+                                            <div className="w-full h-[500px] relative">
+                                                <AppImage src={topStory.imageUrl} alt={topStory.title} className="opacity-30 group-hover:opacity-20 group-hover:scale-105 transition-all duration-500" fallbackText="Top Story" />
                                             </div>
-                                            
-                                            <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-8 lg:p-10">
-                                                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-3 group-hover:text-emerald-300 transition-colors duration-300 leading-tight">
-                                                    {topStory.title}
-                                                </h2>
-                                                <p className="text-white/80 mb-4 text-sm sm:text-base max-w-2xl line-clamp-2 leading-relaxed">
-                                                    {topStory.excerpt}
-                                                </p>
-                                                <div className="flex items-center text-white/60 text-sm">
-                                                    <span className="font-medium">{topStory.authorName}</span>
-                                                    <span className="mx-2">•</span>
-                                                    <span>{topStory.createdAt}</span>
-                                                </div>
+                                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+                                            <div className="absolute bottom-0 left-0 right-0 p-8 md:p-12">
+                                                <h3 className="text-3xl md:text-5xl font-bold mb-4 group-hover:text-emerald-400 transition-colors">{topStory.title}</h3>
+                                                <p className="text-gray-300 mb-6 max-w-3xl line-clamp-2">{topStory.excerpt}</p>
+                                                <p className="text-md text-gray-400">{topStory.authorName} • {topStory.createdAt}</p>
                                             </div>
-                                        </article>
+                                        </div>
                                     </Link>
                                 </div>
                             )}
-
-                            {/* Latest Posts */}
                             {otherStories.length > 0 && (
                                 <div>
-                                    <div className="flex items-center gap-2 mb-8">
-                                        <div className="w-2 h-2 bg-white/40 rounded-full"></div>
-                                        <h2 className="text-white/70 font-medium text-sm uppercase tracking-wider">Latest Stories</h2>
-                                    </div>
-                                    
-                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-                                        {otherStories.map((post, index) => (
-                                            <BlogCard 
-                                                key={post.id} 
-                                                post={post} 
-                                                isLarge={!topStory && index < 2} 
-                                            />
-                                        ))}
+                                    <h2 className="text-3xl font-bold text-gray-300 mb-6 tracking-wide">Latest Posts</h2>
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                                        {otherStories.map((post, index) => (<BlogCard key={post.id} post={post} isLarge={!topStory && index < 2} />))}
                                     </div>
                                 </div>
                             )}
@@ -200,5 +135,4 @@ const BlogPage = () => {
         </div>
     );
 };
-
 export default BlogPage;

@@ -1,71 +1,71 @@
-// app/blogs/[slug]/page.tsx
-import { db } from "@/app/firebase/firebaseAdmin";
-import { notFound } from "next/navigation";
-import Header from "@/app/components/Header";
-import Footer from "@/app/components/Footer";
-import AppImage from "@/app/components/AppImage";
+"use client";
+import React, { useState, useEffect } from 'react';
+import { db } from '@/app/firebase/config';
+import { collection, query, where, getDocs, Timestamp } from 'firebase/firestore';
+import Header from '@/app/components/Header';
+import Footer from '@/app/components/Footer';
+import AppImage from '@/app/components/AppImage';
+// import CommentSection from '@/app/components/CommentSection';
+// import ReactionBar from '@/app/components/ReactionBar';
 
 interface Post {
-  id: string;
-  title: string;
-  authorName: string;
-  createdAt: Date;
-  imageUrl: string;
-  content: string;
+    id: string;
+    title: string;
+    authorName: string;
+    createdAt: Timestamp;
+    imageUrl: string;
+    content: string;
 }
 
-export default async function BlogPostPage(props: { params: Promise<{ slug: string }> }) {
-  const { slug } = await props.params;  // ✅ Await params
+export default function BlogPostPage({ params }: { params: { slug: string } }) {
+    const [post, setPost] = useState<Post | null>(null);
+    const [loading, setLoading] = useState(true);
 
-  const snapshot = await db
-    .collection("posts")
-    .where("slug", "==", slug)
-    .get();
+    useEffect(() => {
+        const fetchPost = async () => {
+            if (!params.slug) return;
+            try {
+                const postsCollection = collection(db, 'posts');
+                const q = query(postsCollection, where("slug", "==", params.slug));
+                const querySnapshot = await getDocs(q);
+                
+                if (!querySnapshot.empty) {
+                    const doc = querySnapshot.docs[0];
+                    setPost({ id: doc.id, ...doc.data() } as Post);
+                }
+            } catch (error) {
+                console.error("Error fetching post:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchPost();
+    }, [params.slug]);
 
-  if (snapshot.empty) {
-    notFound();
-  }
+    if (loading) {
+        return <div className="bg-black h-screen flex items-center justify-center text-white">Loading Post...</div>;
+    }
 
-  const doc = snapshot.docs[0];
-  const data = doc.data();
-  const post: Post = {
-    id: doc.id,
-    title: data.title,
-    authorName: data.authorName,
-    createdAt: data.createdAt?.toDate?.() || new Date(),
-    imageUrl: data.imageUrl,
-    content: data.content,
-  };
+    if (!post) {
+        return <div className="bg-black h-screen flex items-center justify-center text-white">Post not found.</div>;
+    }
 
-  return (
-    <div className="bg-transparent">
-      <Header />
-      <main className="pt-24 pb-16 min-h-screen">
-        <article className="container mx-auto px-4 max-w-4xl">
-          <div className="relative w-full h-96 mb-8 rounded-2xl overflow-hidden">
-            <AppImage
-              src={post.imageUrl}
-              alt={post.title}
-              className="object-cover"
-              fallbackText={post.title}
-            />
-          </div>
-          <p className="text-sm text-gray-500 mb-4">
-            {post.authorName} •{" "}
-            {post.createdAt.toLocaleDateString("en-US", {
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-            })}
-          </p>
-          <h1 className="text-4xl md:text-5xl font-bold mb-8 leading-tight">{post.title}</h1>
-          <div
-            className="prose prose-invert prose-lg max-w-none prose-p:text-gray-300 prose-h2:text-emerald-400 prose-h3:text-emerald-400"
-            dangerouslySetInnerHTML={{ __html: post.content }}
-          />
-        </article>
-      </main>
-      <Footer />
-    </div>
-  );
+    return (
+        <div className="bg-transparent">
+            <Header />
+            <main className="pt-24 pb-16 min-h-screen">
+                <article className="container mx-auto px-4 max-w-4xl">
+                    <div className="relative w-full h-96 mb-8 rounded-2xl overflow-hidden">
+                        <AppImage src={post.imageUrl} alt={post.title} className="object-cover" fallbackText={post.title} />
+                    </div>
+                    <p className="text-sm text-gray-500 mb-4">{post.authorName} • {post.createdAt.toDate().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                    <h1 className="text-4xl md:text-5xl font-bold mb-8 leading-tight text-white">{post.title}</h1>
+                    <div className="prose prose-invert prose-lg max-w-none prose-p:text-gray-300 prose-h2:text-emerald-400" dangerouslySetInnerHTML={{ __html: post.content }} />
+                    {/* <ReactionBar postId={post.id} />
+                    <CommentSection postId={post.id} /> */}
+                </article>
+            </main>
+            <Footer />
+        </div>
+    );
 }

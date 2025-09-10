@@ -1,4 +1,3 @@
-// components/BlogEditor.tsx
 "use client";
 import React from 'react';
 import { useEditor, EditorContent, Editor } from '@tiptap/react';
@@ -7,13 +6,8 @@ import { Bold, Italic, Strikethrough, List, ListOrdered, Heading2, Quote } from 
 
 const EditorToolbar = ({ editor }: { editor: Editor | null }) => {
     if (!editor) return null;
-
-    const buttonClass = (name: string, opts?: Record<string, unknown>) =>
-        `p-2 rounded transition-colors ${
-            editor.isActive(name, opts)
-                ? 'bg-emerald-500/30 text-emerald-300'
-                : 'text-gray-400 hover:bg-gray-700'
-        }`;
+    const buttonClass = (name: string, opts?: {}) => 
+        `p-2 rounded transition-colors ${editor.isActive(name, opts) ? 'bg-emerald-500/30 text-emerald-300' : 'text-gray-400 hover:bg-gray-700'}`;
 
     return (
         <div className="flex items-center gap-1 p-2 border-b border-gray-700 flex-wrap">
@@ -37,8 +31,7 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ value, onChange }) => {
     const editor = useEditor({
         extensions: [ StarterKit ],
         content: value,
-        // This is the definitive fix for the Tiptap hydration error
-        immediatelyRender: false,
+        immediatelyRender: false, // Fixes SSR hydration error
         onUpdate: ({ editor }) => { onChange(editor.getHTML()); },
         editorProps: {
             attributes: {
