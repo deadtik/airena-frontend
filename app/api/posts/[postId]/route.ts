@@ -3,10 +3,19 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db, authAdmin, storage as adminStorage } from '@/app/firebase/firebaseAdmin';
 import slugify from 'slugify';
 
+// --- THIS IS THE FIX ---
+// Define the type for the context object that Next.js passes to the route handler.
+interface RouteContext {
+    params: {
+        postId: string;
+    }
+}
+// --------------------
+
 // GET: Fetches a single post's data for the edit page
-export async function GET(req: NextRequest, { params }: { params: { postId: string } }) {
+export async function GET(req: NextRequest, context: RouteContext) { // Use the defined type here
     try {
-        const { postId } = params;
+        const { postId } = context.params; // Destructure the postId from the context
         const docRef = db.collection('posts').doc(postId);
         const doc = await docRef.get();
 
@@ -21,9 +30,9 @@ export async function GET(req: NextRequest, { params }: { params: { postId: stri
 }
 
 // PUT: Updates an existing post
-export async function PUT(req: NextRequest, { params }: { params: { postId: string } }) {
+export async function PUT(req: NextRequest, context: RouteContext) { // Use the defined type here
     try {
-        const { postId } = params;
+        const { postId } = context.params; // Destructure the postId from the context
         const idToken = req.headers.get('Authorization')?.split('Bearer ')[1];
         if (!idToken) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
@@ -37,15 +46,7 @@ export async function PUT(req: NextRequest, { params }: { params: { postId: stri
         const isFeatured = formData.get('isFeatured') === 'true';
         
         const postRef = db.collection('posts').doc(postId);
-        
-        // --- THIS IS THE FIX ---
-        // Define a more specific type for the update object
-        const updateData: { title: string; content: string; isFeatured: boolean; imageUrl?: string } = { 
-            title, 
-            content, 
-            isFeatured 
-        };
-        // --------------------
+        const updateData: { [key: string]: any } = { title, content, isFeatured };
         
         if (image) {
             const bucket = adminStorage.bucket();
@@ -67,9 +68,9 @@ export async function PUT(req: NextRequest, { params }: { params: { postId: stri
 }
 
 // DELETE: Deletes a post
-export async function DELETE(req: NextRequest, { params }: { params: { postId: string } }) {
+export async function DELETE(req: NextRequest, context: RouteContext) { // Use the defined type here
     try {
-        const { postId } = params;
+        const { postId } = context.params; // Destructure the postId from the context
         const idToken = req.headers.get('Authorization')?.split('Bearer ')[1];
         if (!idToken) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
