@@ -7,7 +7,7 @@ import CategoriesSection from './components/CategoriesSection';
 import FeaturedVideoSection from './components/FeaturedVideoSection';
 import BigTournamentSection from './components/BigTournamentSection';
 import FoundersClubSection from './components/FoundersClubSection';
-import LeaderboardSection from './components/LeaderboardSection';
+
 import Footer from './components/Footer';
 
 export default function HomePage() {

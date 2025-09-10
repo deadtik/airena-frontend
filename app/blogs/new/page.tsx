@@ -1,12 +1,18 @@
-// app/blogs/new/page.tsx
 "use client";
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/app/context/AuthContext';
 import Header from '@/app/components/Header';
 import Footer from '@/app/components/Footer';
-import BlogEditor from '@/app/components/BlogEditor';
+import { auth } from '@/app/firebase/config';
 import { Star } from 'lucide-react';
+import dynamic from 'next/dynamic';
+
+// Dynamically import the editor to prevent SSR errors
+const BlogEditor = dynamic(() => import('@/app/components/BlogEditor'), { 
+    ssr: false,
+    loading: () => <div className="w-full h-[400px] bg-gray-800 rounded-lg animate-pulse"></div>
+});
 
 const NewPostPage = () => {
     const { user, loading, isAdmin } = useAuth();
@@ -23,19 +29,20 @@ const NewPostPage = () => {
         if (!loading && !isAdmin) {
             router.push('/blogs');
         }
-    }, [isAdmin, loading, router]);
+    }, [user, loading, isAdmin, router]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!user || !title.trim() || !content.trim() || !image) {
-            return setError("Please fill out all fields.");
+        if (!user) return setError("You must be logged in to post.");
+        if (!title.trim() || !content.trim() || !image) {
+            return setError("Please provide a title, content, and a featured image.");
         }
-        
+
         setIsSubmitting(true);
         setError('');
 
         try {
-            const idToken = await user.getIdToken();
+            const idToken = await user.getIdToken(true);
             const formData = new FormData();
             formData.append('title', title);
             formData.append('content', content);
@@ -55,7 +62,7 @@ const NewPostPage = () => {
 
             const { slug } = await response.json();
             router.push(`/blogs/${slug}`);
-        } catch (err: unknown) { // Use unknown for better type safety
+        } catch (err: unknown) {
             setError((err as Error).message);
         } finally {
             setIsSubmitting(false);
@@ -67,12 +74,12 @@ const NewPostPage = () => {
     }
 
     return (
-        <div className="bg-black text-white">
+        <div className="bg-transparent">
             <Header />
             <main className="pt-32 pb-16 min-h-screen">
                 <div className="container mx-auto px-4 max-w-4xl">
                     <div className="text-center mb-12">
-                        <h1 className="text-4xl md:text-5xl font-bold">Create New Post</h1>
+                        <h1 className="text-4xl md:text-5xl font-bold">Create a New Post</h1>
                         <p className="text-gray-400 mt-2">Share your story with the Airena community.</p>
                     </div>
                     <form onSubmit={handleSubmit} className="space-y-8 bg-[#181818]/50 border border-gray-800 p-8 rounded-2xl">
@@ -89,7 +96,7 @@ const NewPostPage = () => {
                                 <Star className={`transition-colors ${isFeatured ? 'text-yellow-400' : 'text-gray-500'}`} />
                                 <div>
                                     <label htmlFor="isFeatured" className="text-lg font-semibold text-gray-200">Top Story</label>
-                                    <p className="text-sm text-gray-400">Mark this post as the featured story on the blog homepage.</p>
+                                    <p className="text-sm text-gray-400">Mark this post as the featured story.</p>
                                 </div>
                             </div>
                             <button
