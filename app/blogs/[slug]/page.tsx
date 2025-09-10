@@ -1,3 +1,4 @@
+// app/blogs/[slug]/page.tsx
 "use client";
 import React, { useState, useEffect } from 'react';
 import { db } from '@/app/firebase/config';
@@ -17,7 +18,17 @@ interface Post {
     content: string;
 }
 
-export default function BlogPostPage({ params }: { params: { slug: string } }) {
+// --- THIS IS THE FIX ---
+// Define a specific interface for the page's props.
+interface BlogPostPageProps {
+  params: {
+    slug: string;
+  };
+}
+// --------------------
+
+// Use the new interface for the component's props.
+export default function BlogPostPage({ params }: BlogPostPageProps) {
     const [post, setPost] = useState<Post | null>(null);
     const [loading, setLoading] = useState(true);
 
