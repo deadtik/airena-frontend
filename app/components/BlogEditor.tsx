@@ -5,15 +5,17 @@ import { useEditor, EditorContent, Editor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import { Bold, Italic, Strikethrough, List, ListOrdered, Heading2, Quote } from 'lucide-react';
 
-// Toolbar component for the editor
 const EditorToolbar = ({ editor }: { editor: Editor | null }) => {
     if (!editor) {
         return null;
     }
     
-    // Use a more specific type for opts to satisfy the linter
+    // --- THIS IS THE FIX ---
+    // Change the type of opts from {} to Record<string, any>
+    // This tells TypeScript we expect an object with string keys and any type of value.
     const buttonClass = (name: string, opts?: Record<string, any>) => 
         `p-2 rounded transition-colors ${editor.isActive(name, opts) ? 'bg-emerald-500/30 text-emerald-300' : 'text-gray-400 hover:bg-gray-700'}`;
+    // --------------------
 
     return (
         <div className="flex items-center gap-1 p-2 border-b border-gray-700 flex-wrap">
@@ -28,12 +30,12 @@ const EditorToolbar = ({ editor }: { editor: Editor | null }) => {
     );
 };
 
+
 interface BlogEditorProps {
     value: string;
     onChange: (value: string) => void;
 }
 
-// This line has been corrected (the extra .tsx has been removed)
 const BlogEditor: React.FC<BlogEditorProps> = ({ value, onChange }) => {
     const editor = useEditor({
         extensions: [
