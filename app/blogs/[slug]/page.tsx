@@ -19,7 +19,8 @@ interface Post {
 }
 
 // --- THIS IS THE FIX ---
-// Define a specific interface for the page's props.
+// Define a specific interface for the page's props, which is the standard
+// and correct way to type a dynamic page in the Next.js App Router.
 interface BlogPostPageProps {
   params: {
     slug: string;
