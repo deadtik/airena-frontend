@@ -11,8 +11,7 @@ const EditorToolbar = ({ editor }: { editor: Editor | null }) => {
     }
     
     // --- THIS IS THE FIX ---
-    // Change the type of opts from {} to Record<string, any>
-    // This tells TypeScript we expect an object with string keys and any type of value.
+    // Change the type of opts to Record<string, any> to satisfy the linter.
     const buttonClass = (name: string, opts?: Record<string, any>) => 
         `p-2 rounded transition-colors ${editor.isActive(name, opts) ? 'bg-emerald-500/30 text-emerald-300' : 'text-gray-400 hover:bg-gray-700'}`;
     // --------------------
