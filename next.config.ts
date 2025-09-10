@@ -11,7 +11,8 @@ const nextConfig: NextConfig = {
         headers: [
           {
             key: 'Cross-Origin-Opener-Policy',
-            value: 'same-origin-allow-popups',           },
+            value: 'same-origin-allow-popups',
+          },
         ],
       },
     ];
@@ -31,13 +32,18 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'images.unsplash.com',
       },
-      // --- THIS IS THE FIX ---
-      // Add this new object to allow images from Imgur
       {
         protocol: 'https',
-        hostname: 'i.imgur.com',
+        hostname: 'i.imgur.com', // ✅ Imgur support
       },
     ],
+  },
+
+  //  Increase body size limit for API routes / server actions
+  experimental: {
+    serverActions: {
+      bodySizeLimit: '10mb', // you can set '20mb' or more if needed
+    },
   },
 };
 
