@@ -1,7 +1,6 @@
 @import "tailwindcss";
 @import 'react-phone-number-input/style.css';
 
-
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -25,4 +24,136 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Custom prose styles for TipTap editor */
+.prose {
+  max-width: 65ch;
+  color: #374151;
+}
+
+.prose-invert {
+  color: #d1d5db;
+}
+
+.prose h1,
+.prose-invert h1 {
+  font-size: 2.25rem;
+  font-weight: 800;
+  line-height: 1.111;
+  margin-top: 0;
+  margin-bottom: 0.889rem;
+}
+
+.prose h2,
+.prose-invert h2 {
+  font-size: 1.875rem;
+  font-weight: 700;
+  line-height: 1.333;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+}
+
+.prose h3,
+.prose-invert h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.6;
+  margin-top: 1.6rem;
+  margin-bottom: 0.6rem;
+}
+
+.prose p,
+.prose-invert p {
+  margin-top: 1.25rem;
+  margin-bottom: 1.25rem;
+  line-height: 1.75;
+}
+
+.prose ul,
+.prose-invert ul {
+  list-style-type: disc;
+  margin-top: 1.25rem;
+  margin-bottom: 1.25rem;
+  padding-left: 1.625rem;
+}
+
+.prose ol,
+.prose-invert ol {
+  list-style-type: decimal;
+  margin-top: 1.25rem;
+  margin-bottom: 1.25rem;
+  padding-left: 1.625rem;
+}
+
+.prose li,
+.prose-invert li {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.prose blockquote,
+.prose-invert blockquote {
+  font-weight: 500;
+  font-style: italic;
+  border-left: 0.25rem solid #d1d5db;
+  padding-left: 1rem;
+  margin-top: 1.6rem;
+  margin-bottom: 1.6rem;
+  quotes: "\201C""\201D""\2018""\2019";
+}
+
+.prose-invert blockquote {
+  border-left-color: #4b5563;
+}
+
+.prose strong,
+.prose-invert strong {
+  font-weight: 600;
+}
+
+.prose em,
+.prose-invert em {
+  font-style: italic;
+}
+
+.prose code,
+.prose-invert code {
+  background-color: #f3f4f6;
+  padding: 0.125rem 0.25rem;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+}
+
+.prose-invert code {
+  background-color: #374151;
+}
+
+/* TipTap editor specific styles */
+.ProseMirror {
+  outline: none;
+}
+
+.ProseMirror h1,
+.ProseMirror h2,
+.ProseMirror h3 {
+  color: #10b981; /* emerald-500 */
+}
+
+.ProseMirror p {
+  color: #d1d5db; /* gray-300 */
+}
+
+.ProseMirror ul,
+.ProseMirror ol {
+  padding-left: 1rem;
+}
+
+.ProseMirror li {
+  color: #d1d5db; /* gray-300 */
+}
+
+.ProseMirror blockquote {
+  border-left-color: #10b981; /* emerald-500 */
+  background-color: rgba(16, 185, 129, 0.1); /* emerald-500/10 */
 }

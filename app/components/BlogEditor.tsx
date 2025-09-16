@@ -10,25 +10,70 @@ const EditorToolbar = ({ editor }: { editor: Editor | null }) => {
         return null;
     }
     
-    // --- THIS IS THE FIX ---
-    // Change the type of opts to be more specific than 'any'.
-    const buttonClass = (name: string, opts?: Record<string, string | number>) => 
+    const buttonClass = (name: string, opts?: Record<string, any>) => 
         `p-2 rounded transition-colors ${editor.isActive(name, opts) ? 'bg-emerald-500/30 text-emerald-300' : 'text-gray-400 hover:bg-gray-700'}`;
-    // --------------------
 
     return (
         <div className="flex items-center gap-1 p-2 border-b border-gray-700 flex-wrap">
-            <button type="button" onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} className={buttonClass('heading', { level: 2 })}><Heading2 size={18} /></button>
-            <button type="button" onClick={() => editor.chain().focus().toggleBold().run()} className={buttonClass('bold')}><Bold size={18} /></button>
-            <button type="button" onClick={() => editor.chain().focus().toggleItalic().run()} className={buttonClass('italic')}><Italic size={18} /></button>
-            <button type="button" onClick={() => editor.chain().focus().toggleStrike().run()} className={buttonClass('strike')}><Strikethrough size={18} /></button>
-            <button type="button" onClick={() => editor.chain().focus().toggleBlockquote().run()} className={buttonClass('blockquote')}><Quote size={18} /></button>
-            <button type="button" onClick={() => editor.chain().focus().toggleBulletList().run()} className={buttonClass('bulletList')}><List size={18} /></button>
-            <button type="button" onClick={() => editor.chain().focus().toggleOrderedList().run()} className={buttonClass('orderedList')}><ListOrdered size={18} /></button>
+            <button 
+                type="button" 
+                onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} 
+                className={buttonClass('heading', { level: 2 })}
+                title="Heading 2"
+            >
+                <Heading2 size={18} />
+            </button>
+            <button 
+                type="button" 
+                onClick={() => editor.chain().focus().toggleBold().run()} 
+                className={buttonClass('bold')}
+                title="Bold"
+            >
+                <Bold size={18} />
+            </button>
+            <button 
+                type="button" 
+                onClick={() => editor.chain().focus().toggleItalic().run()} 
+                className={buttonClass('italic')}
+                title="Italic"
+            >
+                <Italic size={18} />
+            </button>
+            <button 
+                type="button" 
+                onClick={() => editor.chain().focus().toggleStrike().run()} 
+                className={buttonClass('strike')}
+                title="Strikethrough"
+            >
+                <Strikethrough size={18} />
+            </button>
+            <button 
+                type="button" 
+                onClick={() => editor.chain().focus().toggleBlockquote().run()} 
+                className={buttonClass('blockquote')}
+                title="Quote"
+            >
+                <Quote size={18} />
+            </button>
+            <button 
+                type="button" 
+                onClick={() => editor.chain().focus().toggleBulletList().run()} 
+                className={buttonClass('bulletList')}
+                title="Bullet List"
+            >
+                <List size={18} />
+            </button>
+            <button 
+                type="button" 
+                onClick={() => editor.chain().focus().toggleOrderedList().run()} 
+                className={buttonClass('orderedList')}
+                title="Ordered List"
+            >
+                <ListOrdered size={18} />
+            </button>
         </div>
     );
 };
-
 
 interface BlogEditorProps {
     value: string;
@@ -51,7 +96,7 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ value, onChange }) => {
         },
         editorProps: {
             attributes: {
-                class: 'prose prose-invert prose-lg max-w-none p-4 min-h-[300px] focus:outline-none prose-p:text-gray-300 prose-h2:text-emerald-400',
+                class: 'prose prose-invert prose-lg max-w-none p-4 min-h-[300px] focus:outline-none',
             },
         },
     });
