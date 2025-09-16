@@ -10,7 +10,7 @@ const EditorToolbar = ({ editor }: { editor: Editor | null }) => {
         return null;
     }
     
-    const buttonClass = (name: string, opts?: Record<string, any>) => 
+    const buttonClass = (name: string, opts?: Record<string, unknown>) => 
         `p-2 rounded transition-colors ${editor.isActive(name, opts) ? 'bg-emerald-500/30 text-emerald-300' : 'text-gray-400 hover:bg-gray-700'}`;
 
     return (
