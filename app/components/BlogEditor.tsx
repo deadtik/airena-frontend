@@ -10,12 +10,11 @@ const EditorToolbar = ({ editor }: { editor: Editor | null }) => {
         return null;
     }
     
-    // --- THIS IS THE DEFINITIVE FIX ---
-    // The type is now specific: an object with string keys and string or number values.
-    // This is safe and satisfies the linter's "no-explicit-any" rule.
+    // --- THIS IS THE FIX ---
+    // Change the type of opts to be more specific than 'any'.
     const buttonClass = (name: string, opts?: Record<string, string | number>) => 
         `p-2 rounded transition-colors ${editor.isActive(name, opts) ? 'bg-emerald-500/30 text-emerald-300' : 'text-gray-400 hover:bg-gray-700'}`;
-    // ---------------------------------
+    // --------------------
 
     return (
         <div className="flex items-center gap-1 p-2 border-b border-gray-700 flex-wrap">

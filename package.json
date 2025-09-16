@@ -7,7 +7,7 @@
     "build": "cross-env NODE_OPTIONS=--openssl-legacy-provider next build",
     "start": "next start",
     "lint": "next lint",
-    "set-admin": "node app/scripts/setAdmin.js"
+    "set-admin": "node scripts/setAdmin.js"
   },
   "dependencies": {
     "@tiptap/extension-image": "^3.4.3",

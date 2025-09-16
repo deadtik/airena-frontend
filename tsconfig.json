@@ -31,7 +31,7 @@
   "include": [
     "**/*.ts",
     "**/*.tsx",
-    "app/scripts/setAdmin.ts",
+    "scripts/setAdmin.ts",
     "next-env.d.ts",
     ".next/types/**/*.ts"
   ],

@@ -1,111 +1,100 @@
 // app/blogs/[slug]/page.tsx
-"use client";
-import React, { useState, useEffect } from 'react';
-import { useParams, notFound } from 'next/navigation'; // Import the useParams hook
-import { db } from '@/app/firebase/config';
-import { collection, query, where, getDocs, Timestamp, limit } from 'firebase/firestore';
-import Header from '@/app/components/Header';
-import Footer from '@/app/components/Footer';
-import AppImage from '@/app/components/AppImage';
-// import CommentSection from '@/app/components/CommentSection';
-// import ReactionBar from '@/app/components/ReactionBar';
+import { db } from "@/app/firebase/firebaseAdmin"; // Use the Admin SDK for Server Components
+import { notFound } from "next/navigation";
+import Header from "@/app/components/Header";
+import Footer from "@/app/components/Footer";
+import AppImage from "@/app/components/AppImage";
+// import CommentSection from "@/components/CommentSection"; // This must be a Client Component
+// import ReactionBar from "@/components/ReactionBar";     // This must be a Client Component
+import { Timestamp } from "firebase-admin/firestore";
 
-// Define the shape of a single Post object
+// Define the shape of the post data
 interface Post {
-    id: string;
-    title: string;
-    authorName: string;
-    createdAt: Timestamp;
-    imageUrl: string;
-    content: string;
+  id: string;
+  title: string;
+  authorName: string;
+  createdAt: Date; // Use the standard Date object for easier formatting
+  imageUrl: string;
+  content: string;
 }
 
-// The component no longer takes props
-export default function BlogPostPage() {
-    const params = useParams(); // Use the hook to get URL parameters
-    const slug = params.slug as string; // Get the slug from the params object
+// Updated signature for Next.js 15 - params is now a Promise
+export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params; // Added await here
 
-    const [post, setPost] = useState<Post | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [postExists, setPostExists] = useState(true);
+  // Fetch the data directly on the server before the page is rendered
+  const snapshot = await db
+    .collection("posts")
+    .where("slug", "==", slug)
+    .limit(1) // Ensure only one document is fetched
+    .get();
 
-    useEffect(() => {
-        // Don't fetch if the slug isn't available yet
-        if (!slug) return;
+  if (snapshot.empty) {
+    notFound(); // Triggers the built-in 404 page if no post is found
+  }
 
-        const fetchPost = async () => {
-            try {
-                const postsCollection = collection(db, 'posts');
-                const q = query(postsCollection, where("slug", "==", slug), limit(1));
-                const querySnapshot = await getDocs(q);
-                
-                if (!querySnapshot.empty) {
-                    const doc = querySnapshot.docs[0];
-                    setPost({ id: doc.id, ...doc.data() } as Post);
-                } else {
-                    setPostExists(false); // Set state to indicate post was not found
-                }
-            } catch (error) {
-                console.error("Error fetching post:", error);
-                setPostExists(false); // Also handle fetch errors
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchPost();
-    }, [slug]); // Re-run the effect if the slug changes
+  const doc = snapshot.docs[0];
+  const data = doc.data();
+  
+  // The toDate() method correctly converts the Firestore Timestamp to a standard Date object
+  const createdAtTimestamp = data.createdAt as Timestamp;
+  
+  const post: Post = {
+    id: doc.id,
+    title: data.title,
+    authorName: data.authorName || 'Airena',
+    createdAt: createdAtTimestamp.toDate(),
+    imageUrl: data.imageUrl,
+    content: data.content,
+  };
 
-    if (loading) {
-        return <div className="bg-black h-screen flex items-center justify-center text-white">Loading Post...</div>;
-    }
+  return (
+    <div className="bg-transparent">
+      <Header />
+      <main className="pt-24 pb-16 min-h-screen">
+        <article className="container mx-auto px-4 max-w-4xl">
+          {/* Featured Image */}
+          <div className="relative w-full h-64 md:h-96 mb-8 rounded-2xl overflow-hidden shadow-lg shadow-black/20">
+            <AppImage
+              src={post.imageUrl}
+              alt={post.title}
+              className="object-cover"
+              fallbackText={post.title}
+            />
+          </div>
+          
+          {/* Post Metadata */}
+          <div className="text-center mb-8">
+            <h1 className="text-4xl md:text-5xl font-bold mb-4 leading-tight text-white">
+              {post.title}
+            </h1>
+            <p className="text-md text-gray-400">
+              By {post.authorName} •{" "}
+              {post.createdAt.toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })}
+            </p>
+          </div>
+          
+          {/* Post Content */}
+          <div
+            className="prose prose-invert prose-lg max-w-none 
+                       prose-p:text-gray-300 prose-p:leading-relaxed
+                       prose-h2:text-emerald-400 prose-h2:font-semibold
+                       prose-blockquote:border-emerald-500 prose-blockquote:bg-emerald-500/10
+                       prose-li:text-gray-300"
+            dangerouslySetInnerHTML={{ __html: post.content }}
+          />
 
-    if (!postExists || !post) {
-        // Use the notFound() function from Next.js to render the 404 page
-        return notFound();
-    }
+          {/* Interactive Client Components for reactions and comments
+          <ReactionBar postId={post.id} />
+          <CommentSection postId={post.id} /> */}
 
-    return (
-        <div className="bg-transparent">
-            <Header />
-            <main className="pt-24 pb-16 min-h-screen">
-                <article className="container mx-auto px-4 max-w-4xl">
-                    <div className="relative w-full h-64 md:h-96 mb-8 rounded-2xl overflow-hidden shadow-lg shadow-black/20">
-                        <AppImage
-                            src={post.imageUrl}
-                            alt={post.title}
-                            fallbackText={post.title}
-                        />
-                    </div>
-                    
-                    <div className="text-center mb-8">
-                        <h1 className="text-4xl md:text-5xl font-bold mb-4 leading-tight text-white">
-                            {post.title}
-                        </h1>
-                        <p className="text-md text-gray-400">
-                            By {post.authorName} •{" "}
-                            {post.createdAt.toDate().toLocaleDateString("en-US", {
-                                year: "numeric",
-                                month: "long",
-                                day: "numeric",
-                            })}
-                        </p>
-                    </div>
-                    
-                    <div
-                        className="prose prose-invert prose-lg max-w-none 
-                                   prose-p:text-gray-300 prose-p:leading-relaxed
-                                   prose-h2:text-emerald-400 prose-h2:font-semibold
-                                   prose-blockquote:border-emerald-500 prose-blockquote:bg-emerald-500/10
-                                   prose-li:text-gray-300"
-                        dangerouslySetInnerHTML={{ __html: post.content }}
-                    />
-
-                    {/* <ReactionBar postId={post.id} />
-                    <CommentSection postId={post.id} /> */}
-
-                </article>
-            </main>
-            <Footer />
-        </div>
-    );
+        </article>
+      </main>
+      <Footer />
+    </div>
+  );
 }
