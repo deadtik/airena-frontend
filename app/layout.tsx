@@ -2,19 +2,13 @@
 "use client";
 
 import React, { useEffect } from "react";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist } from "next/font/google";
 import "./globals.css";
-
 import { AuthProvider } from "./context/AuthContext";
-// Unused 'auth' import has been removed.
+import Script from 'next/script'; // Import the Next.js Script component
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
   subsets: ["latin"],
 });
 
@@ -37,8 +31,18 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} font-sans antialiased`}
       >
+        {/* --- THIS IS THE FIX --- */}
+        {/* Add the AdSense script here, using the environment variable */}
+        <Script
+          async
+          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID}`}
+          crossOrigin="anonymous"
+          strategy="afterInteractive" // Loads the script after the page is usable
+        />
+        {/* -------------------- */}
+
         <style jsx global>{`
           /* ... your global styles ... */
         `}</style>

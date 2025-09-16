@@ -28,8 +28,7 @@ const AppImage: React.FC<AppImageProps> = ({
   )}`;
 
   if (hasError) {
-    // If an error occurred, render a simple <img> tag.
-    // It will fill its parent container because of the className.
+    // If an error occurred, render a simple <img> tag with the fallback.
     return (
       <img
         src={fallbackSrc}
@@ -39,14 +38,14 @@ const AppImage: React.FC<AppImageProps> = ({
     );
   }
 
-  // No extra div wrapper. The component that uses AppImage is responsible for the container.
+  // The component that uses AppImage MUST provide a container with position: relative
   return (
     <Image
       src={src}
       alt={alt}
       fill
-      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" // Fixes the performance warning
-      className={`object-cover ${className}`} // Apply className directly to the Image
+      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+      className={`object-cover ${className}`}
       onError={() => setHasError(true)}
     />
   );

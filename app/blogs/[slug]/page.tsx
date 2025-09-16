@@ -1,18 +1,16 @@
 // app/blogs/[slug]/page.tsx
 "use client";
 import React, { useState, useEffect } from 'react';
-import { useParams, notFound } from 'next/navigation';
+import { useParams, notFound } from 'next/navigation'; // Import the useParams hook
 import { db } from '@/app/firebase/config';
-// --- THIS IS THE FIX ---
-// Add 'limit' to the imports from firebase/firestore
 import { collection, query, where, getDocs, Timestamp, limit } from 'firebase/firestore';
-// --------------------
 import Header from '@/app/components/Header';
 import Footer from '@/app/components/Footer';
 import AppImage from '@/app/components/AppImage';
 // import CommentSection from '@/app/components/CommentSection';
 // import ReactionBar from '@/app/components/ReactionBar';
 
+// Define the shape of a single Post object
 interface Post {
     id: string;
     title: string;
@@ -22,21 +20,22 @@ interface Post {
     content: string;
 }
 
+// The component no longer takes props
 export default function BlogPostPage() {
-    const params = useParams();
-    const slug = params.slug as string;
+    const params = useParams(); // Use the hook to get URL parameters
+    const slug = params.slug as string; // Get the slug from the params object
 
     const [post, setPost] = useState<Post | null>(null);
     const [loading, setLoading] = useState(true);
     const [postExists, setPostExists] = useState(true);
 
     useEffect(() => {
+        // Don't fetch if the slug isn't available yet
         if (!slug) return;
 
         const fetchPost = async () => {
             try {
                 const postsCollection = collection(db, 'posts');
-                // The 'limit' function is now correctly imported and can be used here
                 const q = query(postsCollection, where("slug", "==", slug), limit(1));
                 const querySnapshot = await getDocs(q);
                 
@@ -44,23 +43,24 @@ export default function BlogPostPage() {
                     const doc = querySnapshot.docs[0];
                     setPost({ id: doc.id, ...doc.data() } as Post);
                 } else {
-                    setPostExists(false);
+                    setPostExists(false); // Set state to indicate post was not found
                 }
             } catch (error) {
                 console.error("Error fetching post:", error);
-                setPostExists(false);
+                setPostExists(false); // Also handle fetch errors
             } finally {
                 setLoading(false);
             }
         };
         fetchPost();
-    }, [slug]);
+    }, [slug]); // Re-run the effect if the slug changes
 
     if (loading) {
         return <div className="bg-black h-screen flex items-center justify-center text-white">Loading Post...</div>;
     }
 
     if (!postExists || !post) {
+        // Use the notFound() function from Next.js to render the 404 page
         return notFound();
     }
 

@@ -1,5 +1,5 @@
 // tailwind.config.ts
-import type { Config } from 'tailwindcss'
+import type { Config } from 'tailwindcss';
 
 const config: Config = {
   content: [
@@ -8,11 +8,13 @@ const config: Config = {
     './app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
-    extend: {},
+    extend: {
+      // You can add theme extensions here if needed
+    },
   },
-  // Add this plugins section
+  // This section is essential for the blog post formatting
   plugins: [
     require('@tailwindcss/typography'),
   ],
-}
-export default config
+};
+export default config;
