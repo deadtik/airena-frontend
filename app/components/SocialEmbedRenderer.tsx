@@ -2,6 +2,22 @@
 "use client";
 import React, { useEffect } from 'react';
 
+// TypeScript declarations for external scripts
+declare global {
+  interface Window {
+    twttr?: {
+      widgets: {
+        load: () => void;
+      };
+    };
+    instgrm?: {
+      Embeds: {
+        process: () => void;
+      };
+    };
+  }
+}
+
 interface SocialEmbedRendererProps {
   content: string;
 }

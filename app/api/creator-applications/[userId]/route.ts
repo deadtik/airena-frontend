@@ -2,25 +2,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db, authAdmin } from "@/app/firebase/firebaseAdmin";
 
-// --- THIS IS THE FIX ---
-// Define the type for the context object that Next.js passes to the route handler.
-// This is the standard and correct way to type dynamic route segments.
-interface RouteContext {
-  params: {
-    userId: string;
-  };
-}
-// --------------------
-
 export async function POST(
   req: NextRequest,
-  context: RouteContext // Use the defined type here
+  { params }: { params: Promise<{ userId: string }> }
 ) {
   try {
-    const { userId } = context.params; // Destructure the userId from the context
+    // Await the params Promise
+    const { userId } = await params;
+    
     const idToken = req.headers.get("Authorization")?.split("Bearer ")[1];
-    if (!idToken)
+    if (!idToken) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
     const decodedToken = await authAdmin.verifyIdToken(idToken);
     if (decodedToken.superAdmin !== true) {
