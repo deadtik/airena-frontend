@@ -34,7 +34,11 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'i.imgur.com', // ✅ Imgur support
+        hostname: 'i.imgur.com', //     Imgur support
+      },
+      {
+        protocol: 'https',
+        hostname: 'lh3.googleusercontent.com', // Google profile pictures
       },
     ],
   },

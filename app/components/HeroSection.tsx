@@ -2,7 +2,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { Info } from "lucide-react";
+import { Info, Rocket } from "lucide-react"; // Added Rocket for the new button
 import AppImage from "./AppImage";
 import { useAuth } from "@/app/context/AuthContext";
 
@@ -13,12 +13,12 @@ interface Slide {
 }
 
 const HeroSection = () => {
-  const { user } = useAuth();
+  const { user, setIsModalOpen } = useAuth();
   const [currentSlide, setCurrentSlide] = useState(0);
 
   const slides: Slide[] = [
     {
-      image: "/airenaslide1.jpg",
+      image: "/airenaslide1.webp",
       title: "The Ultimate Gaming & Sports Streaming Platform",
       subtitle:
         "Join the next generation of competitive gaming and sports streaming",
@@ -34,6 +34,12 @@ const HeroSection = () => {
         "https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=2071&auto=format&fit=crop",
       title: "Connect With Your Favorite Creators",
       subtitle: "Follow, subscribe, and support the streamers you love",
+    },
+    { // --- THIS IS THE UPDATED 4TH SLIDE ---
+      image:
+        "/airenaslide4.jpg",
+      title: "Become an Airena Creator!",
+      subtitle: "Create and broadcast the content you love, be limitless.",
     },
   ];
 
@@ -79,28 +85,41 @@ const HeroSection = () => {
               {slides[currentSlide].subtitle}
             </p>
 
-            {/* Buttons */}
+            {/* --- THIS IS THE FIX --- */}
+            {/* Conditional Buttons */}
             <div className="flex items-center gap-4 pt-6">
-              {user ? (
-                <Link
-                  href="/watch"
-                  className="bg-emerald-500 text-white px-8 py-3 rounded-xl font-semibold hover:bg-emerald-600 hover:shadow-lg transition-all transform hover:scale-105"
-                >
-                  Start Watching
-                </Link>
-              ) : (
-                <button
-                  // TODO: Replace with appropriate modal open logic
-                  onClick={() => alert("Please sign in to start watching.")}
-                  className="bg-emerald-500 text-white px-8 py-3 rounded-xl font-semibold hover:bg-emerald-600 hover:shadow-lg transition-all transform hover:scale-105"
-                >
-                  Start Watching
-                </button>
-              )}
-
-              <button className="flex items-center gap-2 text-gray-300 hover:text-white hover:underline underline-offset-4 transition-all">
-                <Info size={20} /> What is Airena?
-              </button>
+                {currentSlide === 3 ? (
+                    // On the 4th slide, show the golden "Apply" button
+                    <Link
+                        href="/creator/apply"
+                        className="bg-gradient-to-r from-amber-500 to-pink-500 px-8 py-3 rounded-xl font-bold hover:from-amber-500 hover:to-yellow-600 transition-all transform hover:scale-105 shadow-lg shadow-yellow-500/20 flex items-center gap-2"
+                    >
+                        <Rocket size={20} />
+                        Apply to be a Creator
+                    </Link>
+                ) : (
+                    // On all other slides, show the original buttons
+                    <>
+                        {user ? (
+                            <Link
+                                href="/watch"
+                                className="bg-emerald-500 text-white px-8 py-3 rounded-xl font-semibold hover:bg-emerald-600 hover:shadow-lg transition-all transform hover:scale-105"
+                            >
+                                Start Watching
+                            </Link>
+                        ) : (
+                            <button
+                                onClick={() => setIsModalOpen(true)}
+                                className="bg-emerald-500 text-white px-8 py-3 rounded-xl font-semibold hover:bg-emerald-600 hover:shadow-lg transition-all transform hover:scale-105"
+                            >
+                                Start Watching
+                            </button>
+                        )}
+                        <button className="flex items-center gap-2 text-gray-300 hover:text-white hover:underline underline-offset-4 transition-all">
+                            <Info size={20} /> What is Airena?
+                        </button>
+                    </>
+                )}
             </div>
           </div>
 
@@ -115,6 +134,7 @@ const HeroSection = () => {
                     ? "w-8 bg-emerald-500"
                     : "w-4 bg-gray-500/70 hover:bg-gray-400"
                 }`}
+                aria-label={`Go to slide ${index + 1}`}
               />
             ))}
           </div>
