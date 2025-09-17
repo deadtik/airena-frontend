@@ -39,14 +39,12 @@ const CreatorDashboardPage = () => {
         if (user && isCreator) {
             const fetchCreatorData = async () => {
                 try {
-                    // Fetch channel data
                     const channelRef = doc(db, 'channels', user.uid);
                     const channelSnap = await getDoc(channelRef);
                     if (channelSnap.exists()) {
                         setChannel(channelSnap.data() as Channel);
                     }
 
-                    // Fetch videos
                     const videosRef = collection(db, 'videos');
                     const q = query(videosRef, where('authorId', '==', user.uid), orderBy('createdAt', 'desc'));
                     const querySnapshot = await getDocs(q);
@@ -102,10 +100,15 @@ const CreatorDashboardPage = () => {
                     <div>
                         <h2 className="text-2xl font-bold mb-6">Your Content</h2>
                         <div className="space-y-4">
-                            {videos.length === 0 ? <p className="text-gray-500">You haven't uploaded any videos yet.</p> : videos.map(video => (
+                            {videos.length === 0 ? (
+                                // --- THIS IS THE FIX ---
+                                // The apostrophe in "haven't" is now correctly escaped as "&apos;"
+                                <p className="text-gray-500">You haven&apos;t uploaded any videos yet.</p>
+                                // --------------------
+                            ) : videos.map(video => (
                                 <div key={video.id} className="flex items-center bg-gray-800/50 p-4 rounded-lg border border-gray-700">
                                     <div className="w-32 h-20 bg-black rounded-md shrink-0">
-                                        {/* In a real app, you'd generate a thumbnail */}
+                                        {/* Thumbnail placeholder */}
                                     </div>
                                     <div className="ml-4 flex-grow">
                                         <h4 className="font-bold text-white line-clamp-2">{video.title}</h4>

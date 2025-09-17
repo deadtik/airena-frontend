@@ -13,9 +13,7 @@ import dynamic from 'next/dynamic';
 // import type { ReactPlayerProps } from 'react-player'; // CORRECT: Import the props type
 import UserAvatar from '@/app/components/UserAvatar';
 
-// --- THIS IS THE DEFINITIVE FIX ---
-// 1. We dynamically import the component to ensure it only runs on the client-side.
-// 2. We use the official ReactPlayerProps type we imported.
+
 const ReactPlayer = dynamic(() => import('react-player'), { ssr: false });
 // ---------------------------------
 

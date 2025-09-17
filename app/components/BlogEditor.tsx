@@ -1,3 +1,4 @@
+// app/components/BlogEditor.tsx
 "use client";
 import React, { useState, useCallback, useEffect } from 'react';
 import { useEditor, EditorContent, Editor } from '@tiptap/react';
@@ -35,7 +36,7 @@ const SocialEmbed = Node.create({
         return [{ tag: 'div[data-social-embed]' }];
     },
     renderHTML({ HTMLAttributes }) {
-        // This is a placeholder that will be replaced on the front end.
+        // This is a placeholder that will be replaced by a renderer component on the front end.
         return ['div', { 
             'data-social-embed': '', 
             'data-src': HTMLAttributes.src, 
@@ -55,6 +56,7 @@ const SocialEmbed = Node.create({
 
 // --- Editor Toolbar Component ---
 const EditorToolbar = ({ editor }: { editor: Editor | null }) => {
+    // All useState hooks are called at the top, unconditionally.
     const [showImageModal, setShowImageModal] = useState(false);
     const [showSocialModal, setShowSocialModal] = useState(false);
     const [imageUrl, setImageUrl] = useState('');
@@ -62,6 +64,7 @@ const EditorToolbar = ({ editor }: { editor: Editor | null }) => {
     const [socialUrl, setSocialUrl] = useState('');
     const [socialType, setSocialType] = useState<'twitter' | 'youtube' | 'instagram'>('twitter');
 
+    // All useCallback hooks are also called at the top, unconditionally.
     const addImage = useCallback(() => {
         if (imageUrl && editor) {
             editor.chain().focus().setImage({ src: imageUrl, alt: imageAlt }).run();
@@ -91,7 +94,8 @@ const EditorToolbar = ({ editor }: { editor: Editor | null }) => {
         editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
     }, [editor]);
     
-    // The check for the editor now happens AFTER all hooks have been called.
+    // --- THIS IS THE FIX ---
+    // The conditional check for the editor now happens AFTER all hooks have been called.
     if (!editor) {
         return null;
     }
@@ -200,4 +204,3 @@ const BlogEditor: React.FC<BlogEditorProps> = ({ value, onChange }) => {
     );
 };
 export default BlogEditor;
-
