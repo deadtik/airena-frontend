@@ -35,6 +35,9 @@ const nextConfig: NextConfig = {
       {
         protocol: 'https',
         hostname: 'i.imgur.com', //     Imgur support
+      }, {
+        protocol: 'https',
+        hostname: 'img.youtube.com', //     Imgur support
       },
       {
         protocol: 'https',

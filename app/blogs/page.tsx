@@ -2,11 +2,13 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { db } from '@/app/firebase/config';
+import Script from 'next/script';
 import { collection, onSnapshot, orderBy, query, Timestamp } from 'firebase/firestore';
 import Header from '@/app/components/Header';
 import Footer from '@/app/components/Footer';
 import BlogCard from '@/app/components/BlogCard';
 import { useAuth } from '@/app/context/AuthContext';
+import AdBanner from '../components/AdBanner';
 import { PenSquare, Sparkles, AlertTriangle, BookOpen, Star, Clock, TrendingUp } from 'lucide-react';
 
 interface Post {
@@ -19,6 +21,8 @@ interface Post {
     imageUrl: string;
     isFeatured: boolean;
 }
+
+
 
 const BlogPage = () => {
     const { user, isAdmin } = useAuth();
@@ -146,8 +150,10 @@ const BlogPage = () => {
                 <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl animate-pulse" style={{animationDelay: '2s'}} />
                 <div className="absolute top-3/4 left-1/3 w-48 h-48 bg-purple-500/5 rounded-full blur-3xl animate-pulse" style={{animationDelay: '4s'}} />
                 <div className="absolute top-1/2 right-1/3 w-32 h-32 bg-pink-500/5 rounded-full blur-3xl animate-pulse" style={{animationDelay: '6s'}} />
+            <AdBanner adSlot="4538040333" className="my-6" />
+
             </div>
-            
+
             <Header />
             
             <main className="relative pt-32 pb-16">
