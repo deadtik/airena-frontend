@@ -11,14 +11,18 @@ const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <header className="py-4 px-6 sm:px-10 lg:px-16 fixed top-0 left-0 right-0 z-50 bg-gradient-to-b from-black/90 via-black/60 to-transparent backdrop-blur-md">
-      <div className="container mx-auto flex justify-between items-center">
+    <header className="h-16 px-6 sm:px-10 lg:px-16 fixed top-0 left-0 right-0 z-50 bg-gradient-to-b from-black/90 via-black/60 to-transparent backdrop-blur-md">
+      <div className="container mx-auto h-full flex justify-between items-center">
         {/* Logo */}
         <Link
           href="/"
-          className="text-2xl font-bold tracking-widest flex items-center gap-2 cursor-pointer text-white hover:text-emerald-400 transition-colors"
+          className="text-xl font-bold tracking-widest flex items-center gap-2 cursor-pointer text-white hover:text-emerald-400 transition-colors"
         >
-          <Gamepad2 size={28} /> AIRENA
+          <img
+            src="/logo.webp"
+            alt="Logo"
+            className="w-30 h-30 object-contain"
+          />
         </Link>
 
         {/* Desktop Nav */}
