@@ -37,7 +37,7 @@ const Header = () => {
           {/* --- THIS IS THE NEW LOGIC --- */}
           {/* Only render creator link if the user has the creator role */}
           {isCreator && (
-            <Link href="/dashboard" className="flex items-center gap-2 text-gray-300 hover:text-emerald-400 transition-colors">
+            <Link href="/creator/dashboard" className="flex items-center gap-2 text-gray-300 hover:text-emerald-400 transition-colors">
               <Video size={16} /> My Dashboard
             </Link>
           )}
