@@ -22,8 +22,6 @@ interface Post {
     isFeatured: boolean;
 }
 
-
-
 const BlogPage = () => {
     const { user, isAdmin } = useAuth();
     const [posts, setPosts] = useState<Post[]>([]);
@@ -150,8 +148,6 @@ const BlogPage = () => {
                 <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl animate-pulse" style={{animationDelay: '2s'}} />
                 <div className="absolute top-3/4 left-1/3 w-48 h-48 bg-purple-500/5 rounded-full blur-3xl animate-pulse" style={{animationDelay: '4s'}} />
                 <div className="absolute top-1/2 right-1/3 w-32 h-32 bg-pink-500/5 rounded-full blur-3xl animate-pulse" style={{animationDelay: '6s'}} />
-            <AdBanner adSlot="4538040333" className="my-6" />
-
             </div>
 
             <Header />
@@ -206,6 +202,11 @@ const BlogPage = () => {
                         )}
                     </div>
 
+                    {/* Top Ad - After Hero Section */}
+                    <div className="flex justify-center mb-12">
+                        <AdBanner adSlot="4538040333" adFormat="horizontal" className="w-full max-w-4xl" />
+                    </div>
+
                     {posts.length === 0 ? (
                         <div className="text-center py-24">
                             <div className="relative inline-block mb-8">
@@ -255,6 +256,13 @@ const BlogPage = () => {
                                     </div>
                                 </section>
                             )}
+
+                            {/* Middle Ad - Between Featured and Latest Stories */}
+                            {topStory && otherStories.length > 0 && (
+                                <div className="flex justify-center">
+                                    <AdBanner adSlot="1234567890" adFormat="rectangle" className="mx-auto" />
+                                </div>
+                            )}
                             
                             {otherStories.length > 0 && (
                                 <section>
@@ -275,16 +283,36 @@ const BlogPage = () => {
                                     
                                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                                         {otherStories.map((post, index) => (
-                                            <div key={post.id} className="relative group">
-                                                <BlogCard post={post} onDelete={setDeleteConfirm} />
-                                                <div 
-                                                    className="absolute -inset-1 bg-gradient-to-r from-emerald-500/5 to-cyan-500/5 rounded-2xl blur opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10"
-                                                    style={{animationDelay: `${index * 0.1}s`}}
-                                                />
-                                            </div>
+                                            <React.Fragment key={post.id}>
+                                                <div className="relative group">
+                                                    <BlogCard post={post} onDelete={setDeleteConfirm} />
+                                                    <div 
+                                                        className="absolute -inset-1 bg-gradient-to-r from-emerald-500/5 to-cyan-500/5 rounded-2xl blur opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10"
+                                                        style={{animationDelay: `${index * 0.1}s`}}
+                                                    />
+                                                </div>
+                                                
+                                                {/* Ad after every 6 posts */}
+                                                {(index + 1) % 6 === 0 && index < otherStories.length - 1 && (
+                                                    <div className="md:col-span-2 lg:col-span-3 flex justify-center my-8">
+                                                        <AdBanner 
+                                                            adSlot={`ad-${Math.floor(index / 6) + 2}`} 
+                                                            adFormat="horizontal" 
+                                                            className="w-full max-w-4xl"
+                                                        />
+                                                    </div>
+                                                )}
+                                            </React.Fragment>
                                         ))}
                                     </div>
                                 </section>
+                            )}
+
+                            {/* Bottom Ad - After all stories */}
+                            {posts.length >= 3 && (
+                                <div className="flex justify-center mt-16">
+                                    <AdBanner adSlot="9876543210" adFormat="horizontal" className="w-full max-w-4xl" />
+                                </div>
                             )}
                         </div>
                     )}
