@@ -4,10 +4,10 @@ import { db, authAdmin } from "@/app/firebase/firebaseAdmin";
 
 export async function GET(
   req: NextRequest,
-  context: { params: { userId: string } }
+  { params }: { params: Promise<{ userId: string }> }
 ) {
   try {
-    const { userId } = context.params;
+    const { userId } = await params;
     const idToken = req.headers.get("Authorization")?.split("Bearer ")[1];
 
     if (!idToken) {
