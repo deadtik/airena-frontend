@@ -6,7 +6,7 @@ import Script from "next/script";
 
 declare global {
   interface Window {
-    adsbygoogle?: { push: (obj: object) => void }[];
+    adsbygoogle: any[];
   }
 }
 
@@ -23,8 +23,8 @@ const AdBanner: React.FC<AdBannerProps> = ({
 }) => {
   useEffect(() => {
     try {
-      if (window.adsbygoogle) {
-        window.adsbygoogle.push({});
+      if (typeof window !== 'undefined') {
+        (window.adsbygoogle = window.adsbygoogle || []).push({});
       }
     } catch (err) {
       console.error("AdSense push error:", err);

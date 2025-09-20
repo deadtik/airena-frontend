@@ -1,13 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db, authAdmin } from "@/app/firebase/firebaseAdmin";
 
-// ✅ Use the built-in type from Next.js
-interface Params {
-  params: { userId: string };
-}
-
 // GET: Fetches all videos for a specific user (the creator)
-export async function GET(req: NextRequest, { params }: Params) {
+export async function GET(
+  req: NextRequest,
+  { params }: { params: { userId: string } }
+) {
   try {
     const { userId } = params;
     const idToken = req.headers.get("Authorization")?.split("Bearer ")[1];
