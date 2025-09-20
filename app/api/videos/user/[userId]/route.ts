@@ -1,13 +1,13 @@
+// app/api/videos/user/[userId]/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { db, authAdmin } from "@/app/firebase/firebaseAdmin";
 
-// GET: Fetches all videos for a specific user (the creator)
 export async function GET(
   req: NextRequest,
-  { params }: { params: { userId: string } }
+  context: { params: { userId: string } }
 ) {
   try {
-    const { userId } = params;
+    const { userId } = context.params;
     const idToken = req.headers.get("Authorization")?.split("Bearer ")[1];
 
     if (!idToken) {
