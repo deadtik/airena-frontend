@@ -1,6 +1,6 @@
 // app/watch/page.tsx
 "use client";
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/app/context/AuthContext';
 import Header from '@/app/components/Header';
@@ -43,7 +43,7 @@ const VideoListItem = ({ video, onSelect, isSelected }: { video: Video, onSelect
     </div>
 );
 
-const WatchPage = () => {
+const WatchContent = () => {
     const { user, loading, isAdmin } = useAuth();
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -231,4 +231,20 @@ const WatchPage = () => {
         </div>
     );
 };
+
+const WatchPage = () => {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-800 flex items-center justify-center">
+                <div className="text-center">
+                    <div className="w-12 h-12 border-4 border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin mx-auto mb-4" />
+                    <p className="text-white text-lg">Loading video player...</p>
+                </div>
+            </div>
+        }>
+            <WatchContent />
+        </Suspense>
+    );
+};
+
 export default WatchPage;
